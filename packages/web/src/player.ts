@@ -1,4 +1,5 @@
 import type { Schedule, SpeechEvent, UnitEvent } from '@animalese/core'
+
 import type { BankSet } from './bank.ts'
 
 import { unitLanguage } from '@animalese/core'

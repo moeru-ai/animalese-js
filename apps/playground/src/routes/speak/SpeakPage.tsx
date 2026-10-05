@@ -1,5 +1,6 @@
 import type { LanguageCode } from 'animalese'
 
+import { errorMessageFrom } from '@moeru/std'
 import { Button, Drawer, Tag } from 'animal-island-ui'
 import { useMemo, useState } from 'react'
 
@@ -61,7 +62,7 @@ export function SpeakPage() {
       URL.revokeObjectURL(link.href)
     }
     catch (cause) {
-      setRenderError(cause instanceof Error ? cause.message : String(cause))
+      setRenderError(errorMessageFrom(cause) ?? String(cause))
     }
     finally {
       setRendering(false)

@@ -1,8 +1,7 @@
 import { mkdtemp, readdir, writeFile } from 'node:fs/promises'
-
 import { tmpdir } from 'node:os'
-
 import { join } from 'node:path'
+
 import { encodeWav } from '@animalese/dsp'
 import { describe, expect, it, vi } from 'vitest'
 
@@ -13,10 +12,10 @@ const wav = () => new Response(encodeWav({ samples: new Float32Array(240).fill(0
 
 function recorder(model: string, responses: (() => Response)[]) {
   const calls: { url: string, init: RequestInit }[] = []
-  const fetcher = vi.fn(async (url: string | URL | Request, init?: RequestInit) => {
+  const fetcher = vi.fn<typeof fetch>(async (url, init) => {
     calls.push({ url: String(url), init: init! })
     return responses.shift()!()
-  }) as unknown as typeof fetch
+  })
   return { calls, recorder: openAISpeechRecorder({ baseUrl: 'https://tts.test/v1', apiKey: 'key', model, voice: 'nova', retryDelayMs: 0, fetch: fetcher }) }
 }
 

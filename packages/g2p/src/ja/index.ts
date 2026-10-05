@@ -1,4 +1,5 @@
 import type { Token, UnitDefinition } from '@animalese/core'
+
 import type { Frontend } from '../shared.ts'
 
 import { hashString } from '@animalese/core'
@@ -155,7 +156,6 @@ const inventory: UnitDefinition[] = unitNames.map((name) => {
 })
 
 const vowelOf = (name: string): string => name.at(-1) === 'n' && name.length === 1 ? 'n' : name.at(-1)!
-const isKanji = (char: string): boolean => /\p{Script=Han}/u.test(char)
 
 /**
  * Japanese frontend: one unit per mora, as in the game's `Kana` banks.
@@ -191,7 +191,7 @@ function analyze(text: string, offset = 0): Token[] {
       previous = vowelOf(previous)
       tokens.push({ kind: 'unit', unit: `ja/${previous}`, text: char, start: at, end: at + char.length })
     }
-    else if (isKanji(char)) {
+    else if (/\p{Script=Han}/u.test(char)) {
       previous = plainMorae[hashString(char) % plainMorae.length]!
       tokens.push({ kind: 'unit', unit: `ja/${previous}`, text: char, start: at, end: at + char.length })
     }

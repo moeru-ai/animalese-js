@@ -1,5 +1,6 @@
 import type { Playback, SpeechOptions } from 'animalese'
 
+import { errorMessageFrom } from '@moeru/std'
 import { useRef, useState } from 'react'
 
 import { useAnimalese } from './animalese'
@@ -48,7 +49,7 @@ export function useSpeech(): Speech {
       await playback.finished
     }
     catch (cause) {
-      setError(cause instanceof Error ? cause.message : String(cause))
+      setError(errorMessageFrom(cause) ?? String(cause))
     }
     finally {
       setBusy(false)

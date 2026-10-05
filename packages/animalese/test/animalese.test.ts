@@ -1,7 +1,8 @@
 import type { BankIndexEntry } from '@animalese/core'
 
-import { describe, expect, it, vi } from 'vitest'
+import { describe, expect, it } from 'vitest'
 
+import { fakeAudioContext, fakeServer } from '../../web/test/fakes.ts'
 import { BankLibrary, createAnimalese } from '../src/index.ts'
 
 function entry(language: 'zh' | 'ja', voice: string, referenceHz: number): BankIndexEntry {
@@ -47,17 +48,13 @@ describe('plan', () => {
 
 describe('say', () => {
   it('loads the planned banks and plays them', async () => {
-    const decoder = { decodeAudioData: vi.fn(async () => ({}) as AudioBuffer) } as unknown as BaseAudioContext
-    const fetcher = vi.fn(async (url: string | URL | Request) => String(url).endsWith('manifest.json')
-      ? Response.json({ format: 'animalese-bank@1', id: 'zh-nova', language: 'zh', voice: 'nova', source: '', sampleRate: 24000, referenceHz: 196, sprite: 'sprite.wav', units: {}, createdAt: '' })
-      : new Response(new ArrayBuffer(8))) as unknown as typeof fetch
-    const node = () => ({ connect: (next: unknown) => next })
-    const audioContext = { currentTime: 0, state: 'running', destination: node() } as unknown as AudioContext
+    const server = fakeServer(entries)
+    const { context } = fakeAudioContext()
 
-    const animalese = await createAnimalese({ banks: new BankLibrary(entries, 'https://example.test/banks/index.json', { context: decoder, fetch: fetcher }), audioContext })
+    const animalese = await createAnimalese({ banks: new BankLibrary(entries, 'https://example.test/banks/index.json', server), audioContext: context })
     const playback = await animalese.say('你好')
     expect(playback.plan.bank).toBe('nova')
-    expect(fetcher).toHaveBeenCalledWith(new URL('https://example.test/banks/zh-nova/manifest.json'))
+    expect(server.requests).toContain('https://example.test/banks/zh-nova/manifest.json')
     playback.stop()
     await playback.finished
   })

@@ -2,27 +2,38 @@ import type { BankIndexEntry, BankManifest } from '@animalese/core'
 
 import { vi } from 'vitest'
 
+/** A test double that implements only what the code under test touches. */
+export function stub<T>(partial: Partial<T>): T {
+  return partial as T
+}
+
+// Only the node-to-node overload is used, which returns its argument for chaining.
+const connect = ((next: AudioNode) => next) as AudioNode['connect']
+
 /** Just enough of an AudioContext for the player; tests drive `currentTime` by hand. */
 export function fakeAudioContext() {
-  const node = () => ({ connect: (next: unknown) => next })
   const sources: { start: ReturnType<typeof vi.fn>, stop: ReturnType<typeof vi.fn>, rates: ReturnType<typeof vi.fn> }[] = []
-  const context = {
-    currentTime: 0,
-    destination: node(),
-    createGain: () => ({ ...node(), gain: { setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() } }),
+  const clock = { currentTime: 0 }
+  const context = stub<AudioContext>({
+    get currentTime() {
+      return clock.currentTime
+    },
+    state: 'running',
+    destination: stub<AudioDestinationNode>({ connect }),
+    createGain: () => stub<GainNode>({ connect, gain: stub<AudioParam>({ setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() }) }),
     createBufferSource: () => {
       const source = { start: vi.fn(), stop: vi.fn(), rates: vi.fn() }
       sources.push(source)
-      return {
-        ...node(),
+      return stub<AudioBufferSourceNode>({
+        connect,
         buffer: null,
-        playbackRate: { setValueAtTime: source.rates, exponentialRampToValueAtTime: vi.fn() },
+        playbackRate: stub<AudioParam>({ setValueAtTime: source.rates, exponentialRampToValueAtTime: vi.fn() }),
         start: source.start,
         stop: source.stop,
-      }
+      })
     },
-  }
-  return { context: context as unknown as AudioContext, clock: context, sources }
+  })
+  return { context, clock, sources }
 }
 
 export function manifest(language: 'zh' | 'ja', voice: string, referenceHz: number): BankManifest {
@@ -48,8 +59,8 @@ export function entry(language: 'zh' | 'ja', voice: string, referenceHz: number)
 export function fakeServer(entries: BankIndexEntry[]) {
   const requests: string[] = []
   let failNext = false
-  const fetcher = vi.fn(async (input: string | URL | Request) => {
-    const url = String(input)
+  const fetcher = vi.fn<typeof fetch>(async (input) => {
+    const url = input instanceof Request ? input.url : String(input)
     requests.push(url)
     if (failNext) {
       failNext = false
@@ -65,8 +76,8 @@ export function fakeServer(entries: BankIndexEntry[]) {
     return file === 'manifest.json'
       ? Response.json(manifest(language as 'zh', voice!, found.referenceHz))
       : new Response(new ArrayBuffer(8))
-  }) as unknown as typeof fetch
-  const decoder = { decodeAudioData: vi.fn(async () => ({ duration: 1 }) as AudioBuffer) } as unknown as BaseAudioContext
+  })
+  const decoder = stub<BaseAudioContext>({ decodeAudioData: vi.fn(async () => stub<AudioBuffer>({ duration: 1 })) })
   return {
     fetch: fetcher,
     context: decoder,

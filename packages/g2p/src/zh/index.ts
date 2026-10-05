@@ -1,4 +1,5 @@
 import type { Token, UnitDefinition } from '@animalese/core'
+
 import type { Frontend } from '../shared.ts'
 
 import { hashString } from '@animalese/core'

@@ -1,6 +1,8 @@
 import type { ReactNode } from 'react'
+
 import type { AnimaleseState } from './animalese'
 
+import { errorMessageFrom } from '@moeru/std'
 import { createAnimalese } from 'animalese'
 import { useEffect, useState } from 'react'
 
@@ -14,7 +16,7 @@ export function AnimaleseProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     createAnimalese({ banks: new URL(indexUrl, location.href) })
       .then(animalese => setState({ animalese, error: null }))
-      .catch((cause: unknown) => setState({ animalese: null, error: cause instanceof Error ? cause.message : String(cause) }))
+      .catch((cause: unknown) => setState({ animalese: null, error: errorMessageFrom(cause) ?? String(cause) }))
   }, [])
 
   return <AnimaleseContext value={state}>{children}</AnimaleseContext>

@@ -1,4 +1,5 @@
 import type { BankIndexEntry, LanguageCode } from '@animalese/core'
+
 import type { BankSet, FetchOptions, LoadedBank } from './bank.ts'
 
 import { closestVoice } from '@animalese/core'

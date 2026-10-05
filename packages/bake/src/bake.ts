@@ -1,6 +1,7 @@
 import type { BankIndexEntry, BankManifest, UnitDefinition } from '@animalese/core'
 import type { PcmBank, PrepareOptions } from '@animalese/dsp'
 import type { Frontend } from '@animalese/g2p'
+
 import type { Recorder } from './recorder.ts'
 
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'

@@ -1,6 +1,7 @@
 import type { DemoClip } from './recording'
 
 import { applyFades, estimatePitch, flattenPitch, normalizeLoudness, pitchBand, trimConsonant, trimSilence } from '@animalese/dsp'
+import { errorMessageFrom } from '@moeru/std'
 import { Button } from 'animal-island-ui'
 import { useEffect, useMemo, useState } from 'react'
 
@@ -68,7 +69,7 @@ export function BakeSteps({ firstIndex }: { firstIndex: number }) {
       setClipId('mic')
     }
     catch (cause) {
-      setMicError(cause instanceof Error ? cause.message : String(cause))
+      setMicError(errorMessageFrom(cause) ?? String(cause))
     }
     finally {
       setRecording(false)

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import type { LanguageCode, VoicePreset } from '@animalese/core'
 
+import process from 'node:process'
+
 import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import process from 'node:process'
 import { parseArgs } from 'node:util'
 
 import { schedule, voicePresets } from '@animalese/core'
@@ -139,8 +140,8 @@ async function say(): Promise<void> {
 function inventory(): void {
   for (const language of list(values.lang) as LanguageCode[]) {
     const units = frontends[language].inventory
-    console.log(`${language}: ${units.length} units`)
-    console.log(units.map(unit => `${unit.id}=${unit.carrier}`).join('  '))
+    process.stdout.write(`${language}: ${units.length} units\n`)
+    process.stdout.write(`${units.map(unit => `${unit.id}=${unit.carrier}`).join('  ')}\n`)
   }
 }
 

@@ -1,4 +1,5 @@
 import type { LanguageCode, Token } from '@animalese/core'
+
 import type { Frontend } from './shared.ts'
 
 import { en } from './en/index.ts'

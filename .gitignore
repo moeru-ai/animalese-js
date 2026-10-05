@@ -12,3 +12,4 @@ research/work/
 research/scripts/__pycache__/
 research/output/transcripts/
 research/output/screenshots/
+.eslintcache

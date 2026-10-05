@@ -1,4 +1,5 @@
 import type { BankManifest } from '@animalese/core'
+
 import type { UnitResolver } from './render.ts'
 
 import { unitLanguage } from '@animalese/core'

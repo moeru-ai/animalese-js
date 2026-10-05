@@ -14,6 +14,7 @@
     "@animalese/dsp": "workspace:^",
     "@animalese/g2p": "workspace:^",
     "@base-ui/react": "^1.8.0",
+    "@moeru/std": "^0.1.0-beta.20",
     "@proj-airi/font-chillroundm": "^0.12.0-beta.5",
     "animal-island-ui": "^2.1.1",
     "animalese": "workspace:^",
