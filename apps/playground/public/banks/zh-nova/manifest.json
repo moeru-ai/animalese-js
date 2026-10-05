@@ -1,0 +1,2023 @@
+{
+  "format": "animalese-bank@1",
+  "id": "zh-nova",
+  "language": "zh",
+  "voice": "nova",
+  "source": "openai:gpt-4o-mini-tts:nova",
+  "sampleRate": 24000,
+  "referenceHz": 196,
+  "sprite": "sprite.wav",
+  "units": {
+    "zh/a": {
+      "offset": 0,
+      "length": 6240,
+      "f0": 177.93
+    },
+    "zh/ai": {
+      "offset": 6720,
+      "length": 6240,
+      "f0": 180.29
+    },
+    "zh/an": {
+      "offset": 13440,
+      "length": 6240,
+      "f0": 235.11
+    },
+    "zh/ang": {
+      "offset": 20160,
+      "length": 6240,
+      "f0": 197.42
+    },
+    "zh/ao": {
+      "offset": 26880,
+      "length": 6240,
+      "f0": 212.79
+    },
+    "zh/ba": {
+      "offset": 33600,
+      "length": 6240,
+      "f0": 177.16
+    },
+    "zh/bai": {
+      "offset": 40320,
+      "length": 6240,
+      "f0": 206.59
+    },
+    "zh/ban": {
+      "offset": 47040,
+      "length": 6240,
+      "f0": 182.22
+    },
+    "zh/bang": {
+      "offset": 53760,
+      "length": 6240,
+      "f0": 243.72
+    },
+    "zh/bao": {
+      "offset": 60480,
+      "length": 6240,
+      "f0": 199.25
+    },
+    "zh/bei": {
+      "offset": 67200,
+      "length": 6240,
+      "f0": 215.42
+    },
+    "zh/ben": {
+      "offset": 73920,
+      "length": 6240,
+      "f0": 196.7
+    },
+    "zh/beng": {
+      "offset": 80640,
+      "length": 6240,
+      "f0": 190.49
+    },
+    "zh/bi": {
+      "offset": 87360,
+      "length": 6240,
+      "f0": 157.03
+    },
+    "zh/bian": {
+      "offset": 94080,
+      "length": 6240,
+      "f0": 217.94
+    },
+    "zh/biao": {
+      "offset": 100800,
+      "length": 6240,
+      "f0": 244.88
+    },
+    "zh/bie": {
+      "offset": 107520,
+      "length": 6240,
+      "f0": 200.66
+    },
+    "zh/bin": {
+      "offset": 114240,
+      "length": 6240,
+      "f0": 197.8
+    },
+    "zh/bing": {
+      "offset": 120960,
+      "length": 6240,
+      "f0": 214.46
+    },
+    "zh/bo": {
+      "offset": 127680,
+      "length": 6240,
+      "f0": 177.8
+    },
+    "zh/bu": {
+      "offset": 134400,
+      "length": 6240,
+      "f0": 255.71
+    },
+    "zh/ca": {
+      "offset": 141120,
+      "length": 6240,
+      "f0": 185.64
+    },
+    "zh/cai": {
+      "offset": 147840,
+      "length": 6240,
+      "f0": 178.3
+    },
+    "zh/can": {
+      "offset": 154560,
+      "length": 6240,
+      "f0": 186.78
+    },
+    "zh/cang": {
+      "offset": 161280,
+      "length": 6240,
+      "f0": 207.36
+    },
+    "zh/cao": {
+      "offset": 168000,
+      "length": 6240,
+      "f0": 200.76
+    },
+    "zh/ce": {
+      "offset": 174720,
+      "length": 6240,
+      "f0": 214.69
+    },
+    "zh/cen": {
+      "offset": 181440,
+      "length": 6240,
+      "f0": 143.9
+    },
+    "zh/ceng": {
+      "offset": 188160,
+      "length": 6240,
+      "f0": 193.51
+    },
+    "zh/cha": {
+      "offset": 194880,
+      "length": 6240,
+      "f0": 224.19
+    },
+    "zh/chai": {
+      "offset": 201600,
+      "length": 6240,
+      "f0": 145.85
+    },
+    "zh/chan": {
+      "offset": 208320,
+      "length": 6240,
+      "f0": 196.32
+    },
+    "zh/chang": {
+      "offset": 215040,
+      "length": 6240,
+      "f0": 183.76
+    },
+    "zh/chao": {
+      "offset": 221760,
+      "length": 6240,
+      "f0": 181.78
+    },
+    "zh/che": {
+      "offset": 228480,
+      "length": 6240,
+      "f0": 226.88
+    },
+    "zh/chen": {
+      "offset": 235200,
+      "length": 6240,
+      "f0": 195.41
+    },
+    "zh/cheng": {
+      "offset": 241920,
+      "length": 5854,
+      "f0": 210.59
+    },
+    "zh/chi": {
+      "offset": 248254,
+      "length": 6240,
+      "f0": 234.19
+    },
+    "zh/chong": {
+      "offset": 254974,
+      "length": 6240,
+      "f0": 202.35
+    },
+    "zh/chou": {
+      "offset": 261694,
+      "length": 6240,
+      "f0": 193.34
+    },
+    "zh/chu": {
+      "offset": 268414,
+      "length": 6240,
+      "f0": 198.46
+    },
+    "zh/chuai": {
+      "offset": 275134,
+      "length": 3318,
+      "f0": 93.53
+    },
+    "zh/chuan": {
+      "offset": 278932,
+      "length": 6240,
+      "f0": 190.28
+    },
+    "zh/chuang": {
+      "offset": 285652,
+      "length": 6240,
+      "f0": 176.03
+    },
+    "zh/chui": {
+      "offset": 292372,
+      "length": 6240,
+      "f0": 200.44
+    },
+    "zh/chun": {
+      "offset": 299092,
+      "length": 6240,
+      "f0": 196.7
+    },
+    "zh/chuo": {
+      "offset": 305812,
+      "length": 5115,
+      "f0": 192.36
+    },
+    "zh/ci": {
+      "offset": 311407,
+      "length": 6089,
+      "f0": 205.14
+    },
+    "zh/cong": {
+      "offset": 317976,
+      "length": 5961,
+      "f0": 197.43
+    },
+    "zh/cou": {
+      "offset": 324417,
+      "length": 4679,
+      "f0": 239.39
+    },
+    "zh/cu": {
+      "offset": 329576,
+      "length": 6240,
+      "f0": 224.14
+    },
+    "zh/cuan": {
+      "offset": 336296,
+      "length": 6240,
+      "f0": 221.88
+    },
+    "zh/cui": {
+      "offset": 343016,
+      "length": 6240,
+      "f0": 185.24
+    },
+    "zh/cun": {
+      "offset": 349736,
+      "length": 6240,
+      "f0": 205.75
+    },
+    "zh/cuo": {
+      "offset": 356456,
+      "length": 6240,
+      "f0": 239.42
+    },
+    "zh/da": {
+      "offset": 363176,
+      "length": 6240,
+      "f0": 205.75
+    },
+    "zh/dai": {
+      "offset": 369896,
+      "length": 6240,
+      "f0": 220.37
+    },
+    "zh/dan": {
+      "offset": 376616,
+      "length": 6240,
+      "f0": 179.72
+    },
+    "zh/dang": {
+      "offset": 383336,
+      "length": 6240,
+      "f0": 181.35
+    },
+    "zh/dao": {
+      "offset": 390056,
+      "length": 6240,
+      "f0": 201.7
+    },
+    "zh/de": {
+      "offset": 396776,
+      "length": 6240,
+      "f0": 150.61
+    },
+    "zh/deng": {
+      "offset": 403496,
+      "length": 6240,
+      "f0": 196.91
+    },
+    "zh/di": {
+      "offset": 410216,
+      "length": 6240,
+      "f0": 191.61
+    },
+    "zh/dia": {
+      "offset": 416936,
+      "length": 6240,
+      "f0": 154.36
+    },
+    "zh/dian": {
+      "offset": 423656,
+      "length": 6240,
+      "f0": 206.59
+    },
+    "zh/diao": {
+      "offset": 430376,
+      "length": 6240,
+      "f0": 175.05
+    },
+    "zh/die": {
+      "offset": 437096,
+      "length": 6240,
+      "f0": 149.57
+    },
+    "zh/ding": {
+      "offset": 443816,
+      "length": 6240,
+      "f0": 209.49
+    },
+    "zh/diu": {
+      "offset": 450536,
+      "length": 6240,
+      "f0": 241.8
+    },
+    "zh/dong": {
+      "offset": 457256,
+      "length": 6240,
+      "f0": 228.67
+    },
+    "zh/dou": {
+      "offset": 463976,
+      "length": 6240,
+      "f0": 245.06
+    },
+    "zh/du": {
+      "offset": 470696,
+      "length": 6240,
+      "f0": 214.33
+    },
+    "zh/duan": {
+      "offset": 477416,
+      "length": 6240,
+      "f0": 187.67
+    },
+    "zh/dui": {
+      "offset": 484136,
+      "length": 6240,
+      "f0": 279.92
+    },
+    "zh/dun": {
+      "offset": 490856,
+      "length": 6240,
+      "f0": 240.18
+    },
+    "zh/duo": {
+      "offset": 497576,
+      "length": 6240,
+      "f0": 144.21
+    },
+    "zh/e": {
+      "offset": 504296,
+      "length": 6240,
+      "f0": 204.84
+    },
+    "zh/ei": {
+      "offset": 511016,
+      "length": 6240,
+      "f0": 143.97
+    },
+    "zh/en": {
+      "offset": 517736,
+      "length": 6240,
+      "f0": 217.37
+    },
+    "zh/er": {
+      "offset": 524456,
+      "length": 6240,
+      "f0": 219.05
+    },
+    "zh/fa": {
+      "offset": 531176,
+      "length": 5844,
+      "f0": 200.43
+    },
+    "zh/fan": {
+      "offset": 537500,
+      "length": 6240,
+      "f0": 216.44
+    },
+    "zh/fang": {
+      "offset": 544220,
+      "length": 6240,
+      "f0": 125.01
+    },
+    "zh/fei": {
+      "offset": 550940,
+      "length": 6240,
+      "f0": 212.74
+    },
+    "zh/fen": {
+      "offset": 557660,
+      "length": 6240,
+      "f0": 197.59
+    },
+    "zh/feng": {
+      "offset": 564380,
+      "length": 6240,
+      "f0": 176.66
+    },
+    "zh/fo": {
+      "offset": 571100,
+      "length": 6240,
+      "f0": 151.42
+    },
+    "zh/fou": {
+      "offset": 577820,
+      "length": 6240,
+      "f0": 143.22
+    },
+    "zh/fu": {
+      "offset": 584540,
+      "length": 6240,
+      "f0": 213.11
+    },
+    "zh/ga": {
+      "offset": 591260,
+      "length": 6240,
+      "f0": 156.9
+    },
+    "zh/gai": {
+      "offset": 597980,
+      "length": 6240,
+      "f0": 186.27
+    },
+    "zh/gan": {
+      "offset": 604700,
+      "length": 6240,
+      "f0": 195.54
+    },
+    "zh/gang": {
+      "offset": 611420,
+      "length": 6240,
+      "f0": 207.29
+    },
+    "zh/gao": {
+      "offset": 618140,
+      "length": 6240,
+      "f0": 163.02
+    },
+    "zh/ge": {
+      "offset": 624860,
+      "length": 6240,
+      "f0": 176.08
+    },
+    "zh/gei": {
+      "offset": 631580,
+      "length": 5403,
+      "f0": 145.92
+    },
+    "zh/gen": {
+      "offset": 637463,
+      "length": 6240,
+      "f0": 241.67
+    },
+    "zh/geng": {
+      "offset": 644183,
+      "length": 6240,
+      "f0": 204.34
+    },
+    "zh/gong": {
+      "offset": 650903,
+      "length": 6240,
+      "f0": 217.84
+    },
+    "zh/gou": {
+      "offset": 657623,
+      "length": 6240,
+      "f0": 177.6
+    },
+    "zh/gu": {
+      "offset": 664343,
+      "length": 6240,
+      "f0": 200.9
+    },
+    "zh/gua": {
+      "offset": 671063,
+      "length": 6240,
+      "f0": 178.92
+    },
+    "zh/guai": {
+      "offset": 677783,
+      "length": 6240,
+      "f0": 240.33
+    },
+    "zh/guan": {
+      "offset": 684503,
+      "length": 6240,
+      "f0": 187.84
+    },
+    "zh/guang": {
+      "offset": 691223,
+      "length": 6240,
+      "f0": 192.28
+    },
+    "zh/gui": {
+      "offset": 697943,
+      "length": 6240,
+      "f0": 181.91
+    },
+    "zh/gun": {
+      "offset": 704663,
+      "length": 6240,
+      "f0": 134.24
+    },
+    "zh/guo": {
+      "offset": 711383,
+      "length": 6240,
+      "f0": 196.06
+    },
+    "zh/ha": {
+      "offset": 718103,
+      "length": 6240,
+      "f0": 180.44
+    },
+    "zh/hai": {
+      "offset": 724823,
+      "length": 6240,
+      "f0": null
+    },
+    "zh/han": {
+      "offset": 731543,
+      "length": 6240,
+      "f0": 218.62
+    },
+    "zh/hang": {
+      "offset": 738263,
+      "length": 6240,
+      "f0": 136.05
+    },
+    "zh/hao": {
+      "offset": 744983,
+      "length": 6240,
+      "f0": 218.04
+    },
+    "zh/he": {
+      "offset": 751703,
+      "length": 5784,
+      "f0": 278.24
+    },
+    "zh/hei": {
+      "offset": 757967,
+      "length": 6240,
+      "f0": 173.96
+    },
+    "zh/hen": {
+      "offset": 764687,
+      "length": 6240,
+      "f0": 266.37
+    },
+    "zh/heng": {
+      "offset": 771407,
+      "length": 6240,
+      "f0": 147.83
+    },
+    "zh/hong": {
+      "offset": 778127,
+      "length": 6240,
+      "f0": 221.87
+    },
+    "zh/hou": {
+      "offset": 784847,
+      "length": 6240,
+      "f0": 225.8
+    },
+    "zh/hu": {
+      "offset": 791567,
+      "length": 6240,
+      "f0": 239.83
+    },
+    "zh/hua": {
+      "offset": 798287,
+      "length": 6240,
+      "f0": 225.91
+    },
+    "zh/huai": {
+      "offset": 805007,
+      "length": 6240,
+      "f0": 148.83
+    },
+    "zh/huan": {
+      "offset": 811727,
+      "length": 6240,
+      "f0": 198.69
+    },
+    "zh/huang": {
+      "offset": 818447,
+      "length": 6240,
+      "f0": 219.46
+    },
+    "zh/hui": {
+      "offset": 825167,
+      "length": 6240,
+      "f0": 191.54
+    },
+    "zh/hun": {
+      "offset": 831887,
+      "length": 6240,
+      "f0": 224.14
+    },
+    "zh/huo": {
+      "offset": 838607,
+      "length": 6240,
+      "f0": 203.47
+    },
+    "zh/ji": {
+      "offset": 845327,
+      "length": 5400,
+      "f0": 240.66
+    },
+    "zh/jia": {
+      "offset": 851207,
+      "length": 6240,
+      "f0": 175.89
+    },
+    "zh/jian": {
+      "offset": 857927,
+      "length": 6240,
+      "f0": 205.36
+    },
+    "zh/jiang": {
+      "offset": 864647,
+      "length": 6240,
+      "f0": 202.84
+    },
+    "zh/jiao": {
+      "offset": 871367,
+      "length": 6240,
+      "f0": 191.45
+    },
+    "zh/jie": {
+      "offset": 878087,
+      "length": 6240,
+      "f0": 197.52
+    },
+    "zh/jin": {
+      "offset": 884807,
+      "length": 6240,
+      "f0": 199.38
+    },
+    "zh/jing": {
+      "offset": 891527,
+      "length": 6240,
+      "f0": 218.23
+    },
+    "zh/jiong": {
+      "offset": 898247,
+      "length": 6240,
+      "f0": 162.3
+    },
+    "zh/jiu": {
+      "offset": 904967,
+      "length": 6240,
+      "f0": 233.71
+    },
+    "zh/ju": {
+      "offset": 911687,
+      "length": 6240,
+      "f0": 187.17
+    },
+    "zh/juan": {
+      "offset": 918407,
+      "length": 6240,
+      "f0": 210.19
+    },
+    "zh/jue": {
+      "offset": 925127,
+      "length": 6240,
+      "f0": 209.04
+    },
+    "zh/jun": {
+      "offset": 931847,
+      "length": 6240,
+      "f0": 244.7
+    },
+    "zh/ka": {
+      "offset": 938567,
+      "length": 6240,
+      "f0": 205.36
+    },
+    "zh/kai": {
+      "offset": 945287,
+      "length": 6240,
+      "f0": 182.71
+    },
+    "zh/kan": {
+      "offset": 952007,
+      "length": 6240,
+      "f0": 199.39
+    },
+    "zh/kang": {
+      "offset": 958727,
+      "length": 6240,
+      "f0": 188.47
+    },
+    "zh/kao": {
+      "offset": 965447,
+      "length": 6240,
+      "f0": null
+    },
+    "zh/ke": {
+      "offset": 972167,
+      "length": 5988,
+      "f0": 138.7
+    },
+    "zh/ken": {
+      "offset": 978635,
+      "length": 6240,
+      "f0": 133.19
+    },
+    "zh/keng": {
+      "offset": 985355,
+      "length": 6240,
+      "f0": 191.99
+    },
+    "zh/kong": {
+      "offset": 992075,
+      "length": 6240,
+      "f0": 226.36
+    },
+    "zh/kou": {
+      "offset": 998795,
+      "length": 6240,
+      "f0": 209.84
+    },
+    "zh/ku": {
+      "offset": 1005515,
+      "length": 6240,
+      "f0": 213.16
+    },
+    "zh/kua": {
+      "offset": 1012235,
+      "length": 6240,
+      "f0": 195.77
+    },
+    "zh/kuai": {
+      "offset": 1018955,
+      "length": 6240,
+      "f0": 201.91
+    },
+    "zh/kuan": {
+      "offset": 1025675,
+      "length": 6240,
+      "f0": 221.64
+    },
+    "zh/kuang": {
+      "offset": 1032395,
+      "length": 6240,
+      "f0": 195.84
+    },
+    "zh/kui": {
+      "offset": 1039115,
+      "length": 6240,
+      "f0": 207.48
+    },
+    "zh/kun": {
+      "offset": 1045835,
+      "length": 6240,
+      "f0": 240.78
+    },
+    "zh/kuo": {
+      "offset": 1052555,
+      "length": 6240,
+      "f0": 239.37
+    },
+    "zh/la": {
+      "offset": 1059275,
+      "length": 6240,
+      "f0": 196.56
+    },
+    "zh/lai": {
+      "offset": 1065995,
+      "length": 6240,
+      "f0": 178.87
+    },
+    "zh/lan": {
+      "offset": 1072715,
+      "length": 6240,
+      "f0": 244.61
+    },
+    "zh/lang": {
+      "offset": 1079435,
+      "length": 6240,
+      "f0": 173.53
+    },
+    "zh/lao": {
+      "offset": 1086155,
+      "length": 6240,
+      "f0": 176.42
+    },
+    "zh/le": {
+      "offset": 1092875,
+      "length": 6240,
+      "f0": 203.41
+    },
+    "zh/lei": {
+      "offset": 1099595,
+      "length": 6240,
+      "f0": 223.62
+    },
+    "zh/leng": {
+      "offset": 1106315,
+      "length": 6240,
+      "f0": 200.9
+    },
+    "zh/li": {
+      "offset": 1113035,
+      "length": 6240,
+      "f0": 152.21
+    },
+    "zh/lia": {
+      "offset": 1119755,
+      "length": 6240,
+      "f0": 157.67
+    },
+    "zh/lian": {
+      "offset": 1126475,
+      "length": 6240,
+      "f0": 229.59
+    },
+    "zh/liang": {
+      "offset": 1133195,
+      "length": 6240,
+      "f0": 186.23
+    },
+    "zh/liao": {
+      "offset": 1139915,
+      "length": 6240,
+      "f0": 201.16
+    },
+    "zh/lie": {
+      "offset": 1146635,
+      "length": 6240,
+      "f0": 244.07
+    },
+    "zh/lin": {
+      "offset": 1153355,
+      "length": 6240,
+      "f0": 204.83
+    },
+    "zh/ling": {
+      "offset": 1160075,
+      "length": 6240,
+      "f0": 191.53
+    },
+    "zh/liu": {
+      "offset": 1166795,
+      "length": 6240,
+      "f0": 214.76
+    },
+    "zh/long": {
+      "offset": 1173515,
+      "length": 6240,
+      "f0": 168.45
+    },
+    "zh/lou": {
+      "offset": 1180235,
+      "length": 6240,
+      "f0": 170.57
+    },
+    "zh/lu": {
+      "offset": 1186955,
+      "length": 6240,
+      "f0": 176.58
+    },
+    "zh/luan": {
+      "offset": 1193675,
+      "length": 6240,
+      "f0": 234.15
+    },
+    "zh/lun": {
+      "offset": 1200395,
+      "length": 6240,
+      "f0": 229.1
+    },
+    "zh/luo": {
+      "offset": 1207115,
+      "length": 6240,
+      "f0": 211.32
+    },
+    "zh/lv": {
+      "offset": 1213835,
+      "length": 6240,
+      "f0": 227.4
+    },
+    "zh/lve": {
+      "offset": 1220555,
+      "length": 6240,
+      "f0": 221.04
+    },
+    "zh/ma": {
+      "offset": 1227275,
+      "length": 6240,
+      "f0": 188.41
+    },
+    "zh/mai": {
+      "offset": 1233995,
+      "length": 6240,
+      "f0": 193.95
+    },
+    "zh/man": {
+      "offset": 1240715,
+      "length": 6240,
+      "f0": 171.91
+    },
+    "zh/mang": {
+      "offset": 1247435,
+      "length": 6240,
+      "f0": 166.3
+    },
+    "zh/mao": {
+      "offset": 1254155,
+      "length": 6240,
+      "f0": 133.27
+    },
+    "zh/me": {
+      "offset": 1260875,
+      "length": 6240,
+      "f0": 157.91
+    },
+    "zh/mei": {
+      "offset": 1267595,
+      "length": 6240,
+      "f0": 214.21
+    },
+    "zh/men": {
+      "offset": 1274315,
+      "length": 6240,
+      "f0": 203.11
+    },
+    "zh/meng": {
+      "offset": 1281035,
+      "length": 6240,
+      "f0": 189.7
+    },
+    "zh/mi": {
+      "offset": 1287755,
+      "length": 6240,
+      "f0": 210.22
+    },
+    "zh/mian": {
+      "offset": 1294475,
+      "length": 6240,
+      "f0": 211.07
+    },
+    "zh/miao": {
+      "offset": 1301195,
+      "length": 6240,
+      "f0": 189.98
+    },
+    "zh/mie": {
+      "offset": 1307915,
+      "length": 6240,
+      "f0": 199.54
+    },
+    "zh/min": {
+      "offset": 1314635,
+      "length": 6240,
+      "f0": 151.21
+    },
+    "zh/ming": {
+      "offset": 1321355,
+      "length": 6240,
+      "f0": 194.83
+    },
+    "zh/miu": {
+      "offset": 1328075,
+      "length": 6240,
+      "f0": 217.63
+    },
+    "zh/mo": {
+      "offset": 1334795,
+      "length": 6240,
+      "f0": 199.6
+    },
+    "zh/mou": {
+      "offset": 1341515,
+      "length": 6240,
+      "f0": 152.32
+    },
+    "zh/mu": {
+      "offset": 1348235,
+      "length": 6240,
+      "f0": 226.14
+    },
+    "zh/na": {
+      "offset": 1354955,
+      "length": 6240,
+      "f0": 209.29
+    },
+    "zh/nai": {
+      "offset": 1361675,
+      "length": 6240,
+      "f0": 257.65
+    },
+    "zh/nan": {
+      "offset": 1368395,
+      "length": 6240,
+      "f0": 133.53
+    },
+    "zh/nang": {
+      "offset": 1375115,
+      "length": 6240,
+      "f0": 154.77
+    },
+    "zh/nao": {
+      "offset": 1381835,
+      "length": 6240,
+      "f0": 233.8
+    },
+    "zh/ne": {
+      "offset": 1388555,
+      "length": 6240,
+      "f0": 180.76
+    },
+    "zh/nei": {
+      "offset": 1395275,
+      "length": 6240,
+      "f0": 152.92
+    },
+    "zh/nen": {
+      "offset": 1401995,
+      "length": 6240,
+      "f0": 235.78
+    },
+    "zh/neng": {
+      "offset": 1408715,
+      "length": 6240,
+      "f0": 168.98
+    },
+    "zh/ng": {
+      "offset": 1415435,
+      "length": 6240,
+      "f0": 172.09
+    },
+    "zh/ni": {
+      "offset": 1422155,
+      "length": 6240,
+      "f0": 180.55
+    },
+    "zh/nian": {
+      "offset": 1428875,
+      "length": 6240,
+      "f0": 172.81
+    },
+    "zh/niang": {
+      "offset": 1435595,
+      "length": 6240,
+      "f0": 195.76
+    },
+    "zh/niao": {
+      "offset": 1442315,
+      "length": 6240,
+      "f0": 145.15
+    },
+    "zh/nie": {
+      "offset": 1449035,
+      "length": 6240,
+      "f0": 183.53
+    },
+    "zh/nin": {
+      "offset": 1455755,
+      "length": 6240,
+      "f0": 166.48
+    },
+    "zh/ning": {
+      "offset": 1462475,
+      "length": 6240,
+      "f0": 188.51
+    },
+    "zh/niu": {
+      "offset": 1469195,
+      "length": 6240,
+      "f0": 157.05
+    },
+    "zh/nong": {
+      "offset": 1475915,
+      "length": 6240,
+      "f0": 146.51
+    },
+    "zh/nou": {
+      "offset": 1482635,
+      "length": 6240,
+      "f0": 167.91
+    },
+    "zh/nu": {
+      "offset": 1489355,
+      "length": 6240,
+      "f0": 185.84
+    },
+    "zh/nuan": {
+      "offset": 1496075,
+      "length": 6240,
+      "f0": 167.45
+    },
+    "zh/nuo": {
+      "offset": 1502795,
+      "length": 6240,
+      "f0": 221.25
+    },
+    "zh/nv": {
+      "offset": 1509515,
+      "length": 6240,
+      "f0": 159.7
+    },
+    "zh/nve": {
+      "offset": 1516235,
+      "length": 6240,
+      "f0": 213.09
+    },
+    "zh/o": {
+      "offset": 1522955,
+      "length": 6240,
+      "f0": 217.69
+    },
+    "zh/ou": {
+      "offset": 1529675,
+      "length": 6240,
+      "f0": 189.24
+    },
+    "zh/pa": {
+      "offset": 1536395,
+      "length": 6240,
+      "f0": 195.16
+    },
+    "zh/pai": {
+      "offset": 1543115,
+      "length": 6240,
+      "f0": 181.65
+    },
+    "zh/pan": {
+      "offset": 1549835,
+      "length": 6240,
+      "f0": 240.31
+    },
+    "zh/pang": {
+      "offset": 1556555,
+      "length": 6240,
+      "f0": 158.9
+    },
+    "zh/pao": {
+      "offset": 1563275,
+      "length": 6240,
+      "f0": 194.2
+    },
+    "zh/pei": {
+      "offset": 1569995,
+      "length": 6240,
+      "f0": 241.39
+    },
+    "zh/pen": {
+      "offset": 1576715,
+      "length": 6240,
+      "f0": 219.86
+    },
+    "zh/peng": {
+      "offset": 1583435,
+      "length": 6240,
+      "f0": 221.79
+    },
+    "zh/pi": {
+      "offset": 1590155,
+      "length": 6240,
+      "f0": 193.41
+    },
+    "zh/pian": {
+      "offset": 1596875,
+      "length": 6240,
+      "f0": 220.94
+    },
+    "zh/piao": {
+      "offset": 1603595,
+      "length": 6240,
+      "f0": 185.79
+    },
+    "zh/pie": {
+      "offset": 1610315,
+      "length": 6240,
+      "f0": 137.5
+    },
+    "zh/pin": {
+      "offset": 1617035,
+      "length": 6240,
+      "f0": 214.78
+    },
+    "zh/ping": {
+      "offset": 1623755,
+      "length": 6240,
+      "f0": 216.23
+    },
+    "zh/po": {
+      "offset": 1630475,
+      "length": 6240,
+      "f0": 195.03
+    },
+    "zh/pou": {
+      "offset": 1637195,
+      "length": 6240,
+      "f0": 139.11
+    },
+    "zh/pu": {
+      "offset": 1643915,
+      "length": 6240,
+      "f0": 297.33
+    },
+    "zh/qi": {
+      "offset": 1650635,
+      "length": 6240,
+      "f0": 248.41
+    },
+    "zh/qia": {
+      "offset": 1657355,
+      "length": 6240,
+      "f0": 193.15
+    },
+    "zh/qian": {
+      "offset": 1664075,
+      "length": 6240,
+      "f0": 197.58
+    },
+    "zh/qiang": {
+      "offset": 1670795,
+      "length": 6240,
+      "f0": 181.56
+    },
+    "zh/qiao": {
+      "offset": 1677515,
+      "length": 6240,
+      "f0": 223.11
+    },
+    "zh/qie": {
+      "offset": 1684235,
+      "length": 6240,
+      "f0": 172.92
+    },
+    "zh/qin": {
+      "offset": 1690955,
+      "length": 6240,
+      "f0": 215.67
+    },
+    "zh/qing": {
+      "offset": 1697675,
+      "length": 6240,
+      "f0": 219.48
+    },
+    "zh/qiong": {
+      "offset": 1704395,
+      "length": 6240,
+      "f0": 142.58
+    },
+    "zh/qiu": {
+      "offset": 1711115,
+      "length": 6240,
+      "f0": 192.78
+    },
+    "zh/qu": {
+      "offset": 1717835,
+      "length": 6240,
+      "f0": 183.3
+    },
+    "zh/quan": {
+      "offset": 1724555,
+      "length": 6240,
+      "f0": 249.55
+    },
+    "zh/que": {
+      "offset": 1731275,
+      "length": 6240,
+      "f0": 179.24
+    },
+    "zh/qun": {
+      "offset": 1737995,
+      "length": 6240,
+      "f0": 156.27
+    },
+    "zh/ran": {
+      "offset": 1744715,
+      "length": 6240,
+      "f0": 147.08
+    },
+    "zh/rang": {
+      "offset": 1751435,
+      "length": 6240,
+      "f0": 203.94
+    },
+    "zh/rao": {
+      "offset": 1758155,
+      "length": 6240,
+      "f0": 179.32
+    },
+    "zh/re": {
+      "offset": 1764875,
+      "length": 6240,
+      "f0": 207.1
+    },
+    "zh/ren": {
+      "offset": 1771595,
+      "length": 6240,
+      "f0": 257.43
+    },
+    "zh/reng": {
+      "offset": 1778315,
+      "length": 6240,
+      "f0": 199.74
+    },
+    "zh/ri": {
+      "offset": 1785035,
+      "length": 6240,
+      "f0": 231.29
+    },
+    "zh/rong": {
+      "offset": 1791755,
+      "length": 6240,
+      "f0": 156.06
+    },
+    "zh/rou": {
+      "offset": 1798475,
+      "length": 6240,
+      "f0": 250.14
+    },
+    "zh/ru": {
+      "offset": 1805195,
+      "length": 6240,
+      "f0": 235.27
+    },
+    "zh/ruan": {
+      "offset": 1811915,
+      "length": 6240,
+      "f0": 162.68
+    },
+    "zh/rui": {
+      "offset": 1818635,
+      "length": 6240,
+      "f0": 225.51
+    },
+    "zh/run": {
+      "offset": 1825355,
+      "length": 6240,
+      "f0": 195.96
+    },
+    "zh/ruo": {
+      "offset": 1832075,
+      "length": 6240,
+      "f0": 234.77
+    },
+    "zh/sa": {
+      "offset": 1838795,
+      "length": 6240,
+      "f0": 187.14
+    },
+    "zh/sai": {
+      "offset": 1845515,
+      "length": 6240,
+      "f0": 167.07
+    },
+    "zh/san": {
+      "offset": 1852235,
+      "length": 6240,
+      "f0": 214.94
+    },
+    "zh/sang": {
+      "offset": 1858955,
+      "length": 6240,
+      "f0": 189.11
+    },
+    "zh/sao": {
+      "offset": 1865675,
+      "length": 6240,
+      "f0": 197.45
+    },
+    "zh/se": {
+      "offset": 1872395,
+      "length": 5610,
+      "f0": 206.62
+    },
+    "zh/sen": {
+      "offset": 1878485,
+      "length": 6240,
+      "f0": 192.99
+    },
+    "zh/seng": {
+      "offset": 1885205,
+      "length": 6240,
+      "f0": 181.67
+    },
+    "zh/sha": {
+      "offset": 1891925,
+      "length": 6240,
+      "f0": 252.95
+    },
+    "zh/shai": {
+      "offset": 1898645,
+      "length": 6240,
+      "f0": 212.18
+    },
+    "zh/shan": {
+      "offset": 1905365,
+      "length": 6240,
+      "f0": 181.46
+    },
+    "zh/shang": {
+      "offset": 1912085,
+      "length": 6240,
+      "f0": 215.76
+    },
+    "zh/shao": {
+      "offset": 1918805,
+      "length": 6240,
+      "f0": 181.22
+    },
+    "zh/she": {
+      "offset": 1925525,
+      "length": 6240,
+      "f0": 214.85
+    },
+    "zh/shen": {
+      "offset": 1932245,
+      "length": 6240,
+      "f0": 197
+    },
+    "zh/sheng": {
+      "offset": 1938965,
+      "length": 6240,
+      "f0": 197.28
+    },
+    "zh/shi": {
+      "offset": 1945685,
+      "length": 6240,
+      "f0": 191.31
+    },
+    "zh/shou": {
+      "offset": 1952405,
+      "length": 6240,
+      "f0": 202.95
+    },
+    "zh/shu": {
+      "offset": 1959125,
+      "length": 6240,
+      "f0": 216.31
+    },
+    "zh/shua": {
+      "offset": 1965845,
+      "length": 6240,
+      "f0": 191.43
+    },
+    "zh/shuai": {
+      "offset": 1972565,
+      "length": 6240,
+      "f0": 288.34
+    },
+    "zh/shuan": {
+      "offset": 1979285,
+      "length": 6240,
+      "f0": 202.66
+    },
+    "zh/shuang": {
+      "offset": 1986005,
+      "length": 6240,
+      "f0": 199.73
+    },
+    "zh/shui": {
+      "offset": 1992725,
+      "length": 6240,
+      "f0": 211.29
+    },
+    "zh/shun": {
+      "offset": 1999445,
+      "length": 6240,
+      "f0": 230.58
+    },
+    "zh/shuo": {
+      "offset": 2006165,
+      "length": 6240,
+      "f0": 252.27
+    },
+    "zh/si": {
+      "offset": 2012885,
+      "length": 6239,
+      "f0": 239.67
+    },
+    "zh/song": {
+      "offset": 2019604,
+      "length": 6200,
+      "f0": 196.49
+    },
+    "zh/sou": {
+      "offset": 2026284,
+      "length": 6240,
+      "f0": 194.63
+    },
+    "zh/su": {
+      "offset": 2033004,
+      "length": 6240,
+      "f0": 264.43
+    },
+    "zh/suan": {
+      "offset": 2039724,
+      "length": 6240,
+      "f0": 192.48
+    },
+    "zh/sui": {
+      "offset": 2046444,
+      "length": 6240,
+      "f0": 197.22
+    },
+    "zh/sun": {
+      "offset": 2053164,
+      "length": 6240,
+      "f0": 129.48
+    },
+    "zh/suo": {
+      "offset": 2059884,
+      "length": 6240,
+      "f0": 217.93
+    },
+    "zh/ta": {
+      "offset": 2066604,
+      "length": 6240,
+      "f0": 212.9
+    },
+    "zh/tai": {
+      "offset": 2073324,
+      "length": 6240,
+      "f0": 183.37
+    },
+    "zh/tan": {
+      "offset": 2080044,
+      "length": 6240,
+      "f0": 173.56
+    },
+    "zh/tang": {
+      "offset": 2086764,
+      "length": 5364,
+      "f0": 200.75
+    },
+    "zh/tao": {
+      "offset": 2092608,
+      "length": 6240,
+      "f0": 215.95
+    },
+    "zh/te": {
+      "offset": 2099328,
+      "length": 6240,
+      "f0": 220.08
+    },
+    "zh/teng": {
+      "offset": 2106048,
+      "length": 6240,
+      "f0": 153.76
+    },
+    "zh/ti": {
+      "offset": 2112768,
+      "length": 6240,
+      "f0": 259.89
+    },
+    "zh/tian": {
+      "offset": 2119488,
+      "length": 6240,
+      "f0": 191.68
+    },
+    "zh/tiao": {
+      "offset": 2126208,
+      "length": 6240,
+      "f0": 124.26
+    },
+    "zh/tie": {
+      "offset": 2132928,
+      "length": 6240,
+      "f0": 210.35
+    },
+    "zh/ting": {
+      "offset": 2139648,
+      "length": 6240,
+      "f0": 201.94
+    },
+    "zh/tong": {
+      "offset": 2146368,
+      "length": 6240,
+      "f0": 198.4
+    },
+    "zh/tou": {
+      "offset": 2153088,
+      "length": 6240,
+      "f0": 196.77
+    },
+    "zh/tu": {
+      "offset": 2159808,
+      "length": 6240,
+      "f0": 304.54
+    },
+    "zh/tuan": {
+      "offset": 2166528,
+      "length": 6240,
+      "f0": 194.5
+    },
+    "zh/tui": {
+      "offset": 2173248,
+      "length": 6240,
+      "f0": 198.49
+    },
+    "zh/tun": {
+      "offset": 2179968,
+      "length": 6240,
+      "f0": 223.96
+    },
+    "zh/tuo": {
+      "offset": 2186688,
+      "length": 6240,
+      "f0": 223.62
+    },
+    "zh/wa": {
+      "offset": 2193408,
+      "length": 6240,
+      "f0": 196.56
+    },
+    "zh/wai": {
+      "offset": 2200128,
+      "length": 6240,
+      "f0": 182.3
+    },
+    "zh/wan": {
+      "offset": 2206848,
+      "length": 6240,
+      "f0": 186.81
+    },
+    "zh/wang": {
+      "offset": 2213568,
+      "length": 6240,
+      "f0": 196.62
+    },
+    "zh/wei": {
+      "offset": 2220288,
+      "length": 6240,
+      "f0": 197.83
+    },
+    "zh/wen": {
+      "offset": 2227008,
+      "length": 6240,
+      "f0": 192.28
+    },
+    "zh/weng": {
+      "offset": 2233728,
+      "length": 6240,
+      "f0": 191.6
+    },
+    "zh/wo": {
+      "offset": 2240448,
+      "length": 6240,
+      "f0": 178.5
+    },
+    "zh/wu": {
+      "offset": 2247168,
+      "length": 6240,
+      "f0": 189.16
+    },
+    "zh/xi": {
+      "offset": 2253888,
+      "length": 6240,
+      "f0": 207.13
+    },
+    "zh/xia": {
+      "offset": 2260608,
+      "length": 6240,
+      "f0": 206.1
+    },
+    "zh/xian": {
+      "offset": 2267328,
+      "length": 6240,
+      "f0": 209.8
+    },
+    "zh/xiang": {
+      "offset": 2274048,
+      "length": 6240,
+      "f0": 188.6
+    },
+    "zh/xiao": {
+      "offset": 2280768,
+      "length": 6240,
+      "f0": 197.63
+    },
+    "zh/xie": {
+      "offset": 2287488,
+      "length": 6240,
+      "f0": 235.27
+    },
+    "zh/xin": {
+      "offset": 2294208,
+      "length": 6240,
+      "f0": 203.17
+    },
+    "zh/xing": {
+      "offset": 2300928,
+      "length": 6240,
+      "f0": 216.68
+    },
+    "zh/xiong": {
+      "offset": 2307648,
+      "length": 6240,
+      "f0": 209.99
+    },
+    "zh/xiu": {
+      "offset": 2314368,
+      "length": 6240,
+      "f0": 242.47
+    },
+    "zh/xu": {
+      "offset": 2321088,
+      "length": 6210,
+      "f0": 206.06
+    },
+    "zh/xuan": {
+      "offset": 2327778,
+      "length": 6240,
+      "f0": 186.68
+    },
+    "zh/xue": {
+      "offset": 2334498,
+      "length": 6240,
+      "f0": 202.36
+    },
+    "zh/xun": {
+      "offset": 2341218,
+      "length": 6240,
+      "f0": 216.96
+    },
+    "zh/ya": {
+      "offset": 2347938,
+      "length": 6240,
+      "f0": 192.38
+    },
+    "zh/yan": {
+      "offset": 2354658,
+      "length": 6240,
+      "f0": 177.67
+    },
+    "zh/yang": {
+      "offset": 2361378,
+      "length": 6240,
+      "f0": 211.87
+    },
+    "zh/yao": {
+      "offset": 2368098,
+      "length": 6240,
+      "f0": 175.14
+    },
+    "zh/ye": {
+      "offset": 2374818,
+      "length": 6240,
+      "f0": 243.72
+    },
+    "zh/yi": {
+      "offset": 2381538,
+      "length": 6240,
+      "f0": 229.67
+    },
+    "zh/yin": {
+      "offset": 2388258,
+      "length": 6240,
+      "f0": 200.53
+    },
+    "zh/ying": {
+      "offset": 2394978,
+      "length": 6240,
+      "f0": 236.82
+    },
+    "zh/yo": {
+      "offset": 2401698,
+      "length": 6240,
+      "f0": 257.79
+    },
+    "zh/yong": {
+      "offset": 2408418,
+      "length": 6240,
+      "f0": 176.98
+    },
+    "zh/you": {
+      "offset": 2415138,
+      "length": 6240,
+      "f0": 181.71
+    },
+    "zh/yu": {
+      "offset": 2421858,
+      "length": 6240,
+      "f0": 193.99
+    },
+    "zh/yuan": {
+      "offset": 2428578,
+      "length": 6240,
+      "f0": 198.87
+    },
+    "zh/yue": {
+      "offset": 2435298,
+      "length": 6240,
+      "f0": 221.28
+    },
+    "zh/yun": {
+      "offset": 2442018,
+      "length": 6240,
+      "f0": 191.98
+    },
+    "zh/za": {
+      "offset": 2448738,
+      "length": 6048,
+      "f0": 171.75
+    },
+    "zh/zai": {
+      "offset": 2455266,
+      "length": 6240,
+      "f0": 212.86
+    },
+    "zh/zan": {
+      "offset": 2461986,
+      "length": 6240,
+      "f0": 156.62
+    },
+    "zh/zang": {
+      "offset": 2468706,
+      "length": 6240,
+      "f0": 180.78
+    },
+    "zh/zao": {
+      "offset": 2475426,
+      "length": 6240,
+      "f0": 170.91
+    },
+    "zh/ze": {
+      "offset": 2482146,
+      "length": 6240,
+      "f0": 167.8
+    },
+    "zh/zei": {
+      "offset": 2488866,
+      "length": 6240,
+      "f0": 144.81
+    },
+    "zh/zen": {
+      "offset": 2495586,
+      "length": 6240,
+      "f0": 127.9
+    },
+    "zh/zeng": {
+      "offset": 2502306,
+      "length": 6240,
+      "f0": 197.52
+    },
+    "zh/zha": {
+      "offset": 2509026,
+      "length": 6240,
+      "f0": 178.67
+    },
+    "zh/zhai": {
+      "offset": 2515746,
+      "length": 6240,
+      "f0": 148.4
+    },
+    "zh/zhan": {
+      "offset": 2522466,
+      "length": 6240,
+      "f0": 183.85
+    },
+    "zh/zhang": {
+      "offset": 2529186,
+      "length": 6240,
+      "f0": 178.73
+    },
+    "zh/zhao": {
+      "offset": 2535906,
+      "length": 6240,
+      "f0": 178.57
+    },
+    "zh/zhe": {
+      "offset": 2542626,
+      "length": 6240,
+      "f0": 191.43
+    },
+    "zh/zhen": {
+      "offset": 2549346,
+      "length": 6240,
+      "f0": 203.29
+    },
+    "zh/zheng": {
+      "offset": 2556066,
+      "length": 6240,
+      "f0": 234.83
+    },
+    "zh/zhi": {
+      "offset": 2562786,
+      "length": 6240,
+      "f0": 222.11
+    },
+    "zh/zhong": {
+      "offset": 2569506,
+      "length": 6240,
+      "f0": 238.15
+    },
+    "zh/zhou": {
+      "offset": 2576226,
+      "length": 6240,
+      "f0": 175.25
+    },
+    "zh/zhu": {
+      "offset": 2582946,
+      "length": 6240,
+      "f0": 214.95
+    },
+    "zh/zhua": {
+      "offset": 2589666,
+      "length": 6240,
+      "f0": 219.21
+    },
+    "zh/zhuai": {
+      "offset": 2596386,
+      "length": 6240,
+      "f0": 178.15
+    },
+    "zh/zhuan": {
+      "offset": 2603106,
+      "length": 6240,
+      "f0": 199.78
+    },
+    "zh/zhuang": {
+      "offset": 2609826,
+      "length": 6240,
+      "f0": 177.61
+    },
+    "zh/zhui": {
+      "offset": 2616546,
+      "length": 6240,
+      "f0": 212.02
+    },
+    "zh/zhun": {
+      "offset": 2623266,
+      "length": 6240,
+      "f0": 242.86
+    },
+    "zh/zhuo": {
+      "offset": 2629986,
+      "length": 6240,
+      "f0": 215.88
+    },
+    "zh/zi": {
+      "offset": 2636706,
+      "length": 6240,
+      "f0": 225.27
+    },
+    "zh/zong": {
+      "offset": 2643426,
+      "length": 6240,
+      "f0": 221.38
+    },
+    "zh/zou": {
+      "offset": 2650146,
+      "length": 6240,
+      "f0": 178.5
+    },
+    "zh/zu": {
+      "offset": 2656866,
+      "length": 6240,
+      "f0": 217.17
+    },
+    "zh/zuan": {
+      "offset": 2663586,
+      "length": 6240,
+      "f0": 252.4
+    },
+    "zh/zui": {
+      "offset": 2670306,
+      "length": 6240,
+      "f0": 252.78
+    },
+    "zh/zun": {
+      "offset": 2677026,
+      "length": 6240,
+      "f0": 203.71
+    },
+    "zh/zuo": {
+      "offset": 2683746,
+      "length": 6240,
+      "f0": 174.35
+    }
+  },
+  "createdAt": "2026-10-05T22:17:57.936Z"
+}

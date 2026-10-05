@@ -1,0 +1,34 @@
+{
+  "name": "@animalese/g2p",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Language frontends that turn text into Animalese voice units",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test",
+    "generate": "node scripts/generate-zh-syllables.ts"
+  },
+  "dependencies": {
+    "@animalese/core": "workspace:^",
+    "es-hangul": "^2.4.0",
+    "pinyin-pro": "^3.29.4",
+    "wanakana": "^5.3.1"
+  }
+}

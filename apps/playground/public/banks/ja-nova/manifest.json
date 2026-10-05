@@ -1,0 +1,518 @@
+{
+  "format": "animalese-bank@1",
+  "id": "ja-nova",
+  "language": "ja",
+  "voice": "nova",
+  "source": "openai:gpt-4o-mini-tts:nova",
+  "sampleRate": 24000,
+  "referenceHz": 174.61,
+  "sprite": "sprite.wav",
+  "units": {
+    "ja/a": {
+      "offset": 0,
+      "length": 5400,
+      "f0": 149.55
+    },
+    "ja/i": {
+      "offset": 5880,
+      "length": 4800,
+      "f0": 251.65
+    },
+    "ja/u": {
+      "offset": 11160,
+      "length": 6240,
+      "f0": 190.47
+    },
+    "ja/e": {
+      "offset": 17880,
+      "length": 5520,
+      "f0": 198.73
+    },
+    "ja/o": {
+      "offset": 23880,
+      "length": 4680,
+      "f0": 173.92
+    },
+    "ja/ka": {
+      "offset": 29040,
+      "length": 4488,
+      "f0": 171.99
+    },
+    "ja/ki": {
+      "offset": 34008,
+      "length": 3686,
+      "f0": 202.65
+    },
+    "ja/ku": {
+      "offset": 38174,
+      "length": 3805,
+      "f0": 201.7
+    },
+    "ja/ke": {
+      "offset": 42459,
+      "length": 4256,
+      "f0": 177.13
+    },
+    "ja/ko": {
+      "offset": 47195,
+      "length": 3895,
+      "f0": 177.02
+    },
+    "ja/sa": {
+      "offset": 51570,
+      "length": 6240,
+      "f0": 193.59
+    },
+    "ja/shi": {
+      "offset": 58290,
+      "length": 6240,
+      "f0": 184.04
+    },
+    "ja/su": {
+      "offset": 65010,
+      "length": 3657,
+      "f0": 177.99
+    },
+    "ja/se": {
+      "offset": 69147,
+      "length": 4398,
+      "f0": 195.13
+    },
+    "ja/so": {
+      "offset": 74025,
+      "length": 5806,
+      "f0": 170.27
+    },
+    "ja/ta": {
+      "offset": 80311,
+      "length": 6240,
+      "f0": 177.81
+    },
+    "ja/chi": {
+      "offset": 87031,
+      "length": 3208,
+      "f0": 204.25
+    },
+    "ja/tsu": {
+      "offset": 90719,
+      "length": 3724,
+      "f0": 246.06
+    },
+    "ja/te": {
+      "offset": 94923,
+      "length": 3780,
+      "f0": 180.23
+    },
+    "ja/to": {
+      "offset": 99183,
+      "length": 6240,
+      "f0": 231.19
+    },
+    "ja/na": {
+      "offset": 105903,
+      "length": 6240,
+      "f0": 151.66
+    },
+    "ja/ni": {
+      "offset": 112623,
+      "length": 6240,
+      "f0": 178.9
+    },
+    "ja/nu": {
+      "offset": 119343,
+      "length": 6240,
+      "f0": 166.8
+    },
+    "ja/ne": {
+      "offset": 126063,
+      "length": 6240,
+      "f0": 180.12
+    },
+    "ja/no": {
+      "offset": 132783,
+      "length": 6240,
+      "f0": 178.86
+    },
+    "ja/ha": {
+      "offset": 139503,
+      "length": 3744,
+      "f0": 156.79
+    },
+    "ja/hi": {
+      "offset": 143727,
+      "length": 6003,
+      "f0": 244.46
+    },
+    "ja/fu": {
+      "offset": 150210,
+      "length": 4024,
+      "f0": 183.54
+    },
+    "ja/he": {
+      "offset": 154714,
+      "length": 6240,
+      "f0": 192.68
+    },
+    "ja/ho": {
+      "offset": 161434,
+      "length": 4641,
+      "f0": 197.77
+    },
+    "ja/ma": {
+      "offset": 166555,
+      "length": 6240,
+      "f0": 153.64
+    },
+    "ja/mi": {
+      "offset": 173275,
+      "length": 6120,
+      "f0": 222.74
+    },
+    "ja/mu": {
+      "offset": 179875,
+      "length": 6240,
+      "f0": 168.31
+    },
+    "ja/me": {
+      "offset": 186595,
+      "length": 6240,
+      "f0": 174.2
+    },
+    "ja/mo": {
+      "offset": 193315,
+      "length": 6240,
+      "f0": 167.27
+    },
+    "ja/ya": {
+      "offset": 200035,
+      "length": 6240,
+      "f0": 177.82
+    },
+    "ja/yu": {
+      "offset": 206755,
+      "length": 6240,
+      "f0": 202.84
+    },
+    "ja/yo": {
+      "offset": 213475,
+      "length": 6240,
+      "f0": 177.72
+    },
+    "ja/ra": {
+      "offset": 220195,
+      "length": 5160,
+      "f0": 163.25
+    },
+    "ja/ri": {
+      "offset": 225835,
+      "length": 6000,
+      "f0": 175.44
+    },
+    "ja/ru": {
+      "offset": 232315,
+      "length": 5760,
+      "f0": 195.07
+    },
+    "ja/re": {
+      "offset": 238555,
+      "length": 6240,
+      "f0": 156.56
+    },
+    "ja/ro": {
+      "offset": 245275,
+      "length": 6240,
+      "f0": 173.19
+    },
+    "ja/wa": {
+      "offset": 251995,
+      "length": 4320,
+      "f0": 151.15
+    },
+    "ja/n": {
+      "offset": 256795,
+      "length": 6120,
+      "f0": 205.48
+    },
+    "ja/ga": {
+      "offset": 263395,
+      "length": 4030,
+      "f0": 188.53
+    },
+    "ja/gi": {
+      "offset": 267905,
+      "length": 4291,
+      "f0": 207.4
+    },
+    "ja/gu": {
+      "offset": 272676,
+      "length": 6240,
+      "f0": 202.45
+    },
+    "ja/ge": {
+      "offset": 279396,
+      "length": 4377,
+      "f0": 178.42
+    },
+    "ja/go": {
+      "offset": 284253,
+      "length": 4376,
+      "f0": 177.58
+    },
+    "ja/za": {
+      "offset": 289109,
+      "length": 6240,
+      "f0": 177.27
+    },
+    "ja/ji": {
+      "offset": 295829,
+      "length": 6240,
+      "f0": 173.88
+    },
+    "ja/zu": {
+      "offset": 302549,
+      "length": 6240,
+      "f0": 214.52
+    },
+    "ja/ze": {
+      "offset": 309269,
+      "length": 4615,
+      "f0": 176.74
+    },
+    "ja/zo": {
+      "offset": 314364,
+      "length": 3433,
+      "f0": 190.51
+    },
+    "ja/da": {
+      "offset": 318277,
+      "length": 6240,
+      "f0": 169.64
+    },
+    "ja/de": {
+      "offset": 324997,
+      "length": 4113,
+      "f0": 162.29
+    },
+    "ja/do": {
+      "offset": 329590,
+      "length": 5801,
+      "f0": 167.37
+    },
+    "ja/ba": {
+      "offset": 335871,
+      "length": 4135,
+      "f0": 176.78
+    },
+    "ja/bi": {
+      "offset": 340486,
+      "length": 6240,
+      "f0": 164.75
+    },
+    "ja/bu": {
+      "offset": 347206,
+      "length": 6000,
+      "f0": 146.8
+    },
+    "ja/be": {
+      "offset": 353686,
+      "length": 4849,
+      "f0": 172.29
+    },
+    "ja/bo": {
+      "offset": 359015,
+      "length": 4152,
+      "f0": 190.08
+    },
+    "ja/pa": {
+      "offset": 363647,
+      "length": 5889,
+      "f0": 148.94
+    },
+    "ja/pi": {
+      "offset": 370016,
+      "length": 3853,
+      "f0": 259.28
+    },
+    "ja/pu": {
+      "offset": 374349,
+      "length": 5357,
+      "f0": 194.01
+    },
+    "ja/pe": {
+      "offset": 380186,
+      "length": 4153,
+      "f0": 190.4
+    },
+    "ja/po": {
+      "offset": 384819,
+      "length": 4681,
+      "f0": 242.21
+    },
+    "ja/kya": {
+      "offset": 389980,
+      "length": 4540,
+      "f0": 216.73
+    },
+    "ja/kyu": {
+      "offset": 395000,
+      "length": 6071,
+      "f0": 188.68
+    },
+    "ja/kyo": {
+      "offset": 401551,
+      "length": 4739,
+      "f0": 179.89
+    },
+    "ja/sha": {
+      "offset": 406770,
+      "length": 4224,
+      "f0": 157.08
+    },
+    "ja/shu": {
+      "offset": 411474,
+      "length": 4978,
+      "f0": 179.13
+    },
+    "ja/sho": {
+      "offset": 416932,
+      "length": 4045,
+      "f0": 201.26
+    },
+    "ja/cha": {
+      "offset": 421457,
+      "length": 4377,
+      "f0": 177.99
+    },
+    "ja/chu": {
+      "offset": 426314,
+      "length": 3586,
+      "f0": 222.78
+    },
+    "ja/cho": {
+      "offset": 430380,
+      "length": 4739,
+      "f0": 180
+    },
+    "ja/nya": {
+      "offset": 435599,
+      "length": 6240,
+      "f0": 159.56
+    },
+    "ja/nyu": {
+      "offset": 442319,
+      "length": 6240,
+      "f0": 144.27
+    },
+    "ja/nyo": {
+      "offset": 449039,
+      "length": 6240,
+      "f0": 152.67
+    },
+    "ja/hya": {
+      "offset": 455759,
+      "length": 6240,
+      "f0": 148.79
+    },
+    "ja/hyu": {
+      "offset": 462479,
+      "length": 6240,
+      "f0": 224.46
+    },
+    "ja/hyo": {
+      "offset": 469199,
+      "length": 4903,
+      "f0": 219.3
+    },
+    "ja/mya": {
+      "offset": 474582,
+      "length": 6240,
+      "f0": 152.77
+    },
+    "ja/myu": {
+      "offset": 481302,
+      "length": 6240,
+      "f0": 194.59
+    },
+    "ja/myo": {
+      "offset": 488022,
+      "length": 6240,
+      "f0": 174.4
+    },
+    "ja/rya": {
+      "offset": 494742,
+      "length": 5578,
+      "f0": 179.18
+    },
+    "ja/ryu": {
+      "offset": 500800,
+      "length": 6240,
+      "f0": 199.09
+    },
+    "ja/ryo": {
+      "offset": 507520,
+      "length": 4984,
+      "f0": 183.43
+    },
+    "ja/gya": {
+      "offset": 512984,
+      "length": 6240,
+      "f0": 179.03
+    },
+    "ja/gyu": {
+      "offset": 519704,
+      "length": 5337,
+      "f0": 178.48
+    },
+    "ja/gyo": {
+      "offset": 525521,
+      "length": 6240,
+      "f0": 165.64
+    },
+    "ja/ja": {
+      "offset": 532241,
+      "length": 6240,
+      "f0": 172.48
+    },
+    "ja/ju": {
+      "offset": 538961,
+      "length": 6240,
+      "f0": 208.57
+    },
+    "ja/jo": {
+      "offset": 545681,
+      "length": 6240,
+      "f0": 183.91
+    },
+    "ja/bya": {
+      "offset": 552401,
+      "length": 6240,
+      "f0": 181.94
+    },
+    "ja/byu": {
+      "offset": 559121,
+      "length": 6240,
+      "f0": 177.52
+    },
+    "ja/byo": {
+      "offset": 565841,
+      "length": 6240,
+      "f0": 179.43
+    },
+    "ja/pya": {
+      "offset": 572561,
+      "length": 5400,
+      "f0": null
+    },
+    "ja/pyu": {
+      "offset": 578441,
+      "length": 4770,
+      "f0": 205.97
+    },
+    "ja/pyo": {
+      "offset": 583691,
+      "length": 5160,
+      "f0": 210.9
+    }
+  },
+  "createdAt": "2026-10-05T22:18:15.654Z"
+}

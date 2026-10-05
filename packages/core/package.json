@@ -1,0 +1,28 @@
+{
+  "name": "@animalese/core",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Text-to-event scheduling and prosody for Animalese-style speech",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test"
+  },
+  "dependencies": {}
+}

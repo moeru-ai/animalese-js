@@ -1,0 +1,31 @@
+{
+  "name": "@animalese/web",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Web Audio playback for Animalese voice banks",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test"
+  },
+  "dependencies": {
+    "@animalese/core": "workspace:^",
+    "@animalese/dsp": "workspace:^"
+  }
+}

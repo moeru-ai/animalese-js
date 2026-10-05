@@ -1,0 +1,56 @@
+[
+  {
+    "id": "ja-nova",
+    "language": "ja",
+    "voice": "nova",
+    "source": "openai:gpt-4o-mini-tts:nova",
+    "referenceHz": 174.61,
+    "units": 101,
+    "manifest": "ja-nova/manifest.json"
+  },
+  {
+    "id": "ja-onyx",
+    "language": "ja",
+    "voice": "onyx",
+    "source": "openai:gpt-4o-mini-tts:onyx",
+    "referenceHz": 98,
+    "units": 101,
+    "manifest": "ja-onyx/manifest.json"
+  },
+  {
+    "id": "ko-nova",
+    "language": "ko",
+    "voice": "nova",
+    "source": "openai:gpt-4o-mini-tts:nova",
+    "referenceHz": 174.61,
+    "units": 323,
+    "manifest": "ko-nova/manifest.json"
+  },
+  {
+    "id": "ko-onyx",
+    "language": "ko",
+    "voice": "onyx",
+    "source": "openai:gpt-4o-mini-tts:onyx",
+    "referenceHz": 92.5,
+    "units": 323,
+    "manifest": "ko-onyx/manifest.json"
+  },
+  {
+    "id": "zh-nova",
+    "language": "zh",
+    "voice": "nova",
+    "source": "openai:gpt-4o-mini-tts:nova",
+    "referenceHz": 196,
+    "units": 402,
+    "manifest": "zh-nova/manifest.json"
+  },
+  {
+    "id": "zh-onyx",
+    "language": "zh",
+    "voice": "onyx",
+    "source": "openai:gpt-4o-mini-tts:onyx",
+    "referenceHz": 98,
+    "units": 402,
+    "manifest": "zh-onyx/manifest.json"
+  }
+]

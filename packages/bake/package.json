@@ -1,0 +1,38 @@
+{
+  "name": "@animalese/bake",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Offline voice bank baker: TTS recording, DSP preprocessing, sprite packing",
+  "license": "MIT",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.mts",
+        "default": "./dist/index.mjs"
+      }
+    },
+    "bin": {
+      "animalese-bake": "./dist/cli.mjs"
+    }
+  },
+  "bin": {
+    "animalese-bake": "./src/cli.ts"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "typecheck": "tsc --noEmit && tsc --noEmit -p test"
+  },
+  "dependencies": {
+    "@animalese/core": "workspace:^",
+    "@animalese/dsp": "workspace:^",
+    "@animalese/g2p": "workspace:^"
+  }
+}

@@ -1,0 +1,10 @@
+minimumReleaseAgeExcludePrune: true
+minimumReleaseAgeExclude:
+  - '@vitejs/plugin-react@6.1.2'
+
+trustPolicy: no-downgrade
+shellEmulator: true
+
+packages:
+  - packages/*
+  - apps/*

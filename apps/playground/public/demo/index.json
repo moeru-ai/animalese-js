@@ -1,0 +1,26 @@
+[
+  {
+    "id": "zh/hao",
+    "carrier": "耗",
+    "reading": "hao",
+    "file": "zh-hao.wav"
+  },
+  {
+    "id": "zh/shi",
+    "carrier": "师",
+    "reading": "shi",
+    "file": "zh-shi.wav"
+  },
+  {
+    "id": "zh/ma",
+    "carrier": "妈",
+    "reading": "ma",
+    "file": "zh-ma.wav"
+  },
+  {
+    "id": "ja/kyo",
+    "carrier": "きょ",
+    "reading": "kyo",
+    "file": "ja-kyo.wav"
+  }
+]

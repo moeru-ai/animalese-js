@@ -1,0 +1,14 @@
+node_modules
+dist
+.cache
+.env
+.env.*
+*.tsbuildinfo
+.DS_Store
+
+# research scratch
+research/tmp/
+research/work/
+research/scripts/__pycache__/
+research/output/transcripts/
+research/output/screenshots/
