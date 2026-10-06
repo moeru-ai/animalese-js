@@ -6,7 +6,7 @@ export const supportedLocales = ['zh-CN', 'en'] as const
 export type Locale = typeof supportedLocales[number]
 
 const zh = {
-  nav: { speak: '说话', live: '实时', inventory: '词表', pipeline: '原理', pages: '页面', language: '界面语言' },
+  nav: { speak: '说话', live: '实时', inventory: '词表', pipeline: '原理', pages: '页面', language: '界面语言', github: '在 GitHub 查看源码（新标签页）' },
   common: {
     language: '语言',
     chinesePronunciation: '中文发音',
@@ -138,7 +138,7 @@ type TranslationShape<T> = {
 }
 
 const en = {
-  nav: { speak: 'Speak', live: 'Live', inventory: 'Inventory', pipeline: 'How it works', pages: 'Pages', language: 'Interface language' },
+  nav: { speak: 'Speak', live: 'Live', inventory: 'Inventory', pipeline: 'How it works', pages: 'Pages', language: 'Interface language', github: 'View source on GitHub (opens in a new tab)' },
   common: { language: 'Language', chinesePronunciation: 'Chinese pronunciation', voiceBank: 'Voice bank', personality: 'Personality', scale: 'Scale', pitch: 'Pitch', textRate: 'Text speed', maxSpeechRate: 'Maximum speech rate', range: 'Range', liveliness: 'Liveliness', glide: 'Ending glide', sustain: 'Sustain', auto: 'Auto', none: 'none', stop: 'Stop', speak: 'Speak!', listen: 'Listen', start: 'Start', unitsPerSecond: '{{value}} units/s', charsPerSecond: '{{value}} chars/s', steps: 'steps', semitones: 'semitones', loading: 'Loading…', unvoiced: 'Unvoiced' },
   language: { zh: 'Chinese', ja: 'Japanese', ko: 'Korean', en: 'English' },
   preset: { normal: 'Normal', peppy: 'Peppy', cranky: 'Cranky', lazy: 'Lazy', snooty: 'Snooty', jock: 'Jock', smug: 'Smug', sisterly: 'Sisterly' },

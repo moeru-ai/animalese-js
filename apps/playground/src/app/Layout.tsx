@@ -31,13 +31,25 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
-        <label className="locale-picker">
-          <span className="sr-only">{t('nav.language')}</span>
-          <select aria-label={t('nav.language')} value={i18n.resolvedLanguage} onChange={event => setLocale(event.target.value as Locale)}>
-            <option value="zh-CN">中文</option>
-            <option value="en">English</option>
-          </select>
-        </label>
+        <div className="header-actions">
+          <label className="locale-picker">
+            <span className="sr-only">{t('nav.language')}</span>
+            <select aria-label={t('nav.language')} value={i18n.resolvedLanguage} onChange={event => setLocale(event.target.value as Locale)}>
+              <option value="zh-CN">中文</option>
+              <option value="en">English</option>
+            </select>
+          </label>
+          <a
+            className="github-link"
+            href="https://github.com/moeru-ai/animalese-js"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={t('nav.github')}
+            title={t('nav.github')}
+          >
+            <span className="github-icon" aria-hidden="true" />
+          </a>
+        </div>
       </header>
       <main className="content">
         {error && (
