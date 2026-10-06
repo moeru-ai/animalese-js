@@ -1,41 +1,75 @@
-# Animalese
+# `animalese-js`
 
-用 TypeScript 程序化复现动森风格的"动物语"（Animalese）。
+[![License](https://badgen.net/github/license/moeru-ai/animalese-js)](LICENSE)
 
-思路来自[重轻的教程](https://www.bilibili.com/video/BV1Mf4y1S7Gs)：
+`animalese-js` makes Animal Crossing style speech ("Animalese") in TypeScript. You give it text in Chinese, Japanese, Korean, or English. It gives you the babble that the villagers speak, in time with the dialogue box.
 
-1. 录声母、韵母这类最小的音。
-2. 把录音切成单个音。
-3. 随机触发这些音。
-4. 把音高抬上去。
-5. 把音高量化到音阶上。
+The work has two parts:
 
-教程里在 DAW 中手工做的处理，这里都放到了离线烘焙阶段。运行时只做三件事：切分文字、排好时间和旋律、改播放速率。参数按游戏录屏的测量结果校准。
+- An offline bake records the smallest sound units of each language with a TTS service, processes them, and packs them into voice banks.
+- At runtime, the library splits the text into units, puts them on a timeline with a melody, and plays the banked units at a changed playback rate.
 
-研究材料（调研文档、转录、ASR 部署）保存在 `research/`，见 `research/output/README.md`。
+> We measured the timing and the pitch values on recordings of _Animal Crossing: New Horizons_. The splitting rules are a good approximation, not the original algorithm of the game.
 
-## 用法
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [Getting Started](#getting-started)
+- [Understand Animalese](#understand-animalese)
+- [Packages](#packages)
+- [Status](#status)
+- [Development](#development)
+- [Related](#related)
+- [Acknowledgements](#acknowledgements)
+- [License](#license)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js 24 or later
+- pnpm 11 or later
+- An OpenAI-compatible TTS endpoint, only if you bake your own voice banks
+
+The packages are not on npm yet. Use them from this repository.
+
+### Run the Playground
+
+```sh
+pnpm install
+pnpm dev
+```
+
+Open the URL that Vite shows. The repository includes baked voice banks, so the playground works without a TTS endpoint.
+
+### Speak in the Browser
 
 ```ts
 import { createAnimalese } from 'animalese'
 
 const animalese = await createAnimalese({ banks: '/banks/index.json' })
 
-// 浏览器要求先有用户操作，才能出声
+// Browsers start audio only after a user gesture.
 button.onclick = () => animalese.say('哎呀，你来啦！', { voice: { preset: 'peppy' } })
-
-// 只排计划，不碰音频：可以看到切分结果、哪些字被跳过、选中了哪个声库
-const plan = animalese.plan('I would melt.', { voice: { preset: 'smug', baseHz: 330 } })
-
-// 导出 WAV
-const wav = await animalese.render('你好呀', { voice: { preset: 'cranky' } })
 ```
 
-`voice` 可以只写一个预设，也可以在预设基础上覆盖个别字段，例如 `{ preset: 'cranky', speed: 7 }`。完整字段见 `VoiceOptions`。
+`createAnimalese()` returns three main functions:
 
-`bank` 默认按 `voice.baseHz` 自动挑录音音高最接近的声库，也可以手动指定，例如 `{ bank: 'onyx' }`。
+- `say(text, options)` plays the text and calls `onEvent` as each character appears.
+- `plan(text, options)` gives the tokens, the timeline, and the selected voice bank. It does not touch audio.
+- `render(text, options)` gives a WAV file as a `Blob`.
 
-想自己组合流程时，可以直接用底层包：
+Each call accepts a `voice` and a `bank`:
+
+- `voice` is a preset, a preset with changes such as `{ preset: 'cranky', speed: 7 }`, or a full `VoiceOptions` object.
+- `bank` is the name of a recorded voice. If you do not give it, the library selects the voice that was recorded closest to `voice.baseHz`.
+
+### Compose the Steps Yourself
+
+The lower-level packages let you control each step:
 
 ```ts
 import { schedule } from '@animalese/core'
@@ -43,12 +77,15 @@ import { analyze } from '@animalese/g2p'
 import { BankLibrary, play } from '@animalese/web'
 
 const tokens = analyze('今日はいい天気ですね')
-const plan = schedule(tokens, { preset: 'lazy' })
+const timeline = schedule(tokens, { preset: 'lazy' })
 const library = await BankLibrary.fromIndex('/banks/index.json')
-play(new AudioContext(), await library.load('nova', ['ja']), plan)
+
+play(new AudioContext(), await library.load('nova', ['ja']), timeline)
 ```
 
-在 Node 里渲染（不需要 Web Audio）：
+### Render in Node.js
+
+Node.js has no Web Audio. Use the renderer in `@animalese/dsp` instead:
 
 ```ts
 import { readBank } from '@animalese/bake'
@@ -56,83 +93,171 @@ import { schedule } from '@animalese/core'
 import { bankResolver, encodeWav, renderSchedule } from '@animalese/dsp'
 import { analyze } from '@animalese/g2p'
 
-const banks = [await readBank('banks/zh-nova')]
-const samples = renderSchedule(schedule(analyze('你好'), { preset: 'peppy' }), bankResolver(banks), 44100)
+const banks = [await readBank('apps/playground/public/banks/zh-nova')]
+const timeline = schedule(analyze('你好呀'), { preset: 'peppy' })
+const samples = renderSchedule(timeline, bankResolver(banks), 44100)
 const wav = encodeWav({ samples, sampleRate: 44100 })
 ```
 
-## 包结构
+The CLI does the same in one command:
 
-| 包 | 内容 | 依赖 |
-| --- | --- | --- |
-| `animalese` | 总入口：`createAnimalese()` 把切分、调度、选声库、播放串起来，同时重新导出常用 API | core、g2p、web |
-| `@animalese/core` | 类型、声线预设、语言节奏、文字和声音两个时钟（`revealTimes` / `voiceClock`）、旋律（`shapeMelody`）、`schedule()` | 无 |
-| `@animalese/g2p` | 语言前端：中文用 pinyin-pro，日文用 wanakana，韩文用 es-hangul；英文按音节切分后映射到假名；还有混排路由和各语言的词表 | core |
-| `@animalese/dsp` | 纯 TS 音频处理：WAV 读写、重采样、YIN 基频检测、TD-PSOLA 拉平音高、单元预处理、sprite 打包、离线混音、内存声库 | core |
-| `@animalese/web` | `BankLibrary`（读取 index、按音高选声库、加载缓存）、`play()`、`render()`、`renderWav()` | core、dsp |
-| `@animalese/bake` | 烘焙：OpenAI 兼容 TTS 录音（带磁盘缓存，会拒收静音）、`bakeBank()`、`readBank()`、`animalese-bake` CLI | core、dsp、g2p |
-
-`apps/playground` 是演示站点，基于 Vite、React、React Router、Base UI 和 animal-island-ui，字体是 Chill Round M。包含三个页面：
-
-- **说话**：输入文字，看对话框随声音逐字出现，也能导出 WAV。
-- **词表**：按各语言自己的音节表展示全部单元：中文是声母 × 韵母，日文是五十音图，韩文是初声 × 中声。英文页演示音节到假名的映射。
-- **原理**：逐步、可交互地讲解整条流程。离线部分直接在浏览器里跑 `dsp`，可以换内置录音，也可以录自己的声音；运行时部分实时显示两个时钟和旋律。
-
-## 烘焙声库
-
-```bash
-pnpm install
-pnpm bake --env-file ~/Git/github.com/moeru-ai/airi/packages/testing-audio/.env.local \
-  --lang zh,ja,ko --voice nova,onyx
-pnpm dev
+```sh
+pnpm say --bank apps/playground/public/banks/zh-onyx --text '嘿，过得还好吗？' --preset cranky --out hello.wav
 ```
 
-凭据按以下顺序读取：
+### Bake Voice Banks
 
-1. `ANIMALESE_TTS_BASE_URL`、`ANIMALESE_TTS_API_KEY`、`ANIMALESE_TTS_MODEL`
+Put the TTS credentials in an env file. Then bake the languages and voices that you want:
+
+```sh
+pnpm bake --env-file .env --lang zh,ja,ko --voice nova,onyx
+```
+
+The baker reads the credentials in this order:
+
+1. `ANIMALESE_TTS_BASE_URL`, `ANIMALESE_TTS_API_KEY`, and `ANIMALESE_TTS_MODEL`
 2. `TESTING_AUDIO_TTS_*`
-3. `OPENAI_BASE_URL`、`OPENAI_API_KEY`
+3. `OPENAI_BASE_URL` and `OPENAI_API_KEY`
 
-原始录音缓存在 `.cache/tts`。之后改参数重新烘焙，只会为缓存里没有的单元发请求；缓存里的静音录音会被重新录制。
+The baker keeps each raw recording in `.cache/tts`. When you bake again with different settings, it sends requests only for units that are not in the cache. TTS services sometimes return silence for one syllable. The baker rejects these recordings and records them again.
 
-| 语言 | 单元 | 载体 |
-| --- | --- | --- |
-| zh | 402 个无调音节 | 每个音节的载体字由 `packages/g2p/scripts/generate-zh-syllables.ts` 从 GB2312 一级字中挑选，优先单读音字，其次一声；有几个音节手动指定 |
-| ja | 101 个假名拍（含拗音） | 假名本身 |
-| ko | 323 个开音节（19 声母 × 17 韵母，丢弃收音） | 音节本身 |
-| en | 没有独立单元，按音节映射到 ja 声库的假名 | — |
+## Understand Animalese
 
-烘焙时，每个有基频的单元依次经过：
+This project uses the recipe of the [Animalese tutorial by 重轻](https://www.bilibili.com/video/BV1Mf4y1S7Gs):
 
-1. 切掉首尾静音。
-2. 把起振前的辅音缩短到 30 ms 以内。
-3. 用 TD-PSOLA 把单元内部的音高拉成一条直线，对齐到同一个参考音（声库的中位基频，取整到半音），时长和共振峰不变。
-4. 截长，加淡入淡出，统一响度。
-5. 所有单元打包成一个 `sprite.wav`，由 `manifest.json` 记录每个单元的位置。
+1. Record the shortest sounds of a language, such as Chinese initials and finals.
+2. Cut the recording into single sounds.
+3. Trigger the sounds at random.
+4. Raise the pitch.
+5. Snap the pitch to a musical scale.
 
-## 和游戏录屏对照得出的参数
+The tutorial does these steps by hand in a DAW. `animalese-js` does steps 1, 2, and the flat pitch offline. At runtime, it only splits text, plans the timeline and the melody, and changes the playback rate.
 
-对照简中版 ACNH 录屏 `BV1pk4y1L7q5`、`BV1p94y1S76G`，以及英文版 YouTube `oMeQA38IVyo`：
-
-- **中文**：对话框约 11–13 字/秒，声音约 8–10 音/秒，大约 0.6–0.8 的字被念出来。因此调度器让文字和声音各走各的时钟：每一拍念最新出现的字，并优先跳过轻声字（的、了、吗……）。录屏能确认"音比字少"，但区分不了游戏是刻意挑字，还是单纯跟不上。
-- **英文**：对话框约 45–70 字母/秒，声音约 13–14 音/秒，大约一个音节一个音。
-- **单个音**：约 70–140 ms，音高基本是平的，尾部略往下滑。
-- **音高**：差别很大。暴躁型罗博约 114 Hz，Marshal（自恋）约 330 Hz，Derwin（悠闲）约 445 Hz，彼得约 400 Hz，小桃约 500 Hz。所以音高用绝对频率表示，低音角色用低音声线（onyx）烘焙的声库，而不是把高音声库放慢。
-- **日文和韩文**：还没有测量，暂时沿用中文的节奏（见 `languagePacing`）。
-
-## 已知限制
-
-- 日文汉字还没有接词典，现在按哈希映射到一个固定的假名，所以节奏对、读音不对。
-- 混排文本里，只要出现平假名，汉字就按日文读。只有汉字和片假名的日文（例如"東京タワー"）需要显式传入 `language: 'ja'`。
-- 中文载体字单独朗读时，TTS 不一定读成我们想要的音。目前只靠规则挑字，没有逐个人工核对。
-- 声库是未压缩的 16-bit WAV，每个声线三种语言约 9 MB。
-- 切分规则是合理的近似，不是 ACNH 的原始算法（见 `research/output/acnh-speech-research.md`）。
-
-## 开发
-
-```bash
-pnpm test:run    # vitest，覆盖所有包
-pnpm typecheck   # tsc 7（src 开 isolatedDeclarations，测试单独配置）
-pnpm lint        # @antfu/eslint-config；typescript-eslint 通过 @typescript/typescript6 别名运行
-pnpm build       # tsdown 构建所有包
+```mermaid
+flowchart LR
+  subgraph Offline bake
+    A[Carrier text] --> B[TTS recording]
+    B --> C[Trim silence]
+    C --> D[Shorten consonant]
+    D --> E[Flatten pitch]
+    E --> F[Sprite and manifest]
+  end
+  subgraph Runtime
+    G[Text] --> H[G2P tokens]
+    H --> I[Text clock and voice clock]
+    I --> J[Melody]
+    J --> K[Playback]
+  end
+  F --> K
 ```
+
+### Voice Banks
+
+A voice bank holds every unit of one language, recorded with one TTS voice:
+
+| Language | Units | Carrier text for the recording |
+| --- | --- | --- |
+| Chinese | 402 toneless syllables | One common character for each syllable, from the first level of GB2312. The generator prefers characters with one reading, then the first tone. |
+| Japanese | 101 kana morae, with yōon | The kana |
+| Korean | 323 open syllables (19 initials × 17 vowels) | The syllable |
+| English | No units of its own | English syllables use the nearest kana from the Japanese bank. |
+
+The baker does these steps on each voiced unit:
+
+1. It trims the silence at the start and the end.
+2. It keeps a maximum of 30 ms of consonant before the voice starts.
+3. It makes the pitch flat with TD-PSOLA, at the reference pitch of the bank. TD-PSOLA keeps the length and the formants.
+4. It cuts the unit to a maximum length, adds fades, and sets the loudness.
+5. It packs all units into one `sprite.wav`. The `manifest.json` file gives the position of each unit.
+
+The reference pitch is the median pitch of the bank, rounded to a semitone. Because every unit has the same flat pitch, the runtime gets each note from one playback rate.
+
+### Two Clocks
+
+In the game, the dialogue box and the voice have different speeds. The text appears at the typing speed. The voice says a maximum number of units each second. On each tick, the voice says the latest character that appeared. The voice skips the characters that come faster than it can speak. It skips weak characters first, such as the Chinese neutral tone (的, 了, 吗) and English function words.
+
+### Calibration
+
+We measured these values on recordings of the Chinese and English versions of the game:
+
+| Value | Chinese | English |
+| --- | --- | --- |
+| Text speed | 11–13 characters/s | 45–70 letters/s |
+| Voice speed | 8–10 units/s | 13–14 units/s |
+| Units for each character or syllable | 0.6–0.8 | 0.75–1 |
+
+Other measured values:
+
+- One unit lasts 70–140 ms. Its pitch is almost flat, with a small fall at the end.
+- The pitch changes much between villagers: about 114 Hz for the cranky 罗博 (Lobo), 330 Hz for Marshal, 445 Hz for Derwin, and 500 Hz for 小桃.
+
+Because of these differences, the voice options give the pitch in Hz. A low voice uses a bank recorded with a low voice (`onyx`). The library does not play a high recording at a slower rate.
+
+The recordings do not show if the game selects the skipped characters on purpose, or if the voice is only too slow. We did not measure Japanese and Korean yet, so they use the Chinese pacing.
+
+## Packages
+
+| Package | Purpose |
+| --- | --- |
+| [`animalese`](https://github.com/moeru-ai/animalese-js/tree/main/packages/animalese) | Entry point. `createAnimalese()` connects the analysis, the timeline, the bank selection, and playback. |
+| [`@animalese/core`](https://github.com/moeru-ai/animalese-js/tree/main/packages/core) | Types, voice presets, language pacing, the two clocks (`revealTimes`, `voiceClock`), the melody (`shapeMelody`), and `schedule()`. It has no dependencies. |
+| [`@animalese/g2p`](https://github.com/moeru-ai/animalese-js/tree/main/packages/g2p) | Language front ends: Chinese with `pinyin-pro`, Japanese with `wanakana`, Korean with `es-hangul`, and English syllables mapped to kana. It also routes mixed-script text and holds the unit inventories. |
+| [`@animalese/dsp`](https://github.com/moeru-ai/animalese-js/tree/main/packages/dsp) | Audio processing in plain TypeScript: WAV, resampling, YIN pitch tracking, TD-PSOLA, unit preparation, sprite packing, and offline rendering. |
+| [`@animalese/web`](https://github.com/moeru-ai/animalese-js/tree/main/packages/web) | `BankLibrary` (index, bank selection by pitch, cached loading), `play()`, `render()`, and `renderWav()` with Web Audio. |
+| [`@animalese/bake`](https://github.com/moeru-ai/animalese-js/tree/main/packages/bake) | The baker: a cached recorder for OpenAI-compatible TTS, `bakeBank()`, `readBank()`, and the `animalese-bake` CLI. |
+
+The [playground](https://github.com/moeru-ai/animalese-js/tree/main/apps/playground) uses Vite, React, React Router, Base UI, and [`animal-island-ui`](https://github.com/guokaigdg/animal-island-ui). It has three pages:
+
+- **说话 (Speak)**: Type text and see the dialogue box appear with the voice. You can export WAV files.
+- **词表 (Inventory)**: See each unit on the syllable chart of its language, and listen to it.
+- **原理 (Pipeline)**: See each step of the pipeline, with controls. The offline steps run the real DSP code in the browser, on built-in recordings or on your microphone.
+
+## Status
+
+`animalese-js` is early, and its APIs can change. These limits are known:
+
+- Japanese kanji do not have a dictionary yet. Each kanji maps to a fixed kana, so the rhythm is correct but the reading is not.
+- If mixed text has hiragana, the library reads Han characters as Japanese. Otherwise, it reads them as Chinese. For text such as 東京タワー, give `language: 'ja'`.
+- A TTS service can read a Chinese carrier character with a different pronunciation. We did not listen to all 402 carriers.
+- The voice banks are uncompressed 16-bit WAV, about 9 MB for each voice.
+
+## Development
+
+This repository is a pnpm workspace:
+
+```sh
+pnpm install
+pnpm test:run
+pnpm typecheck
+pnpm lint
+pnpm build
+```
+
+`pnpm lint` runs `moeru-lint`, which runs oxlint and then ESLint. The ESLint configuration follows [Project AIRI](https://github.com/moeru-ai/airi).
+
+The table of contents in this README comes from `doctoc`. After you change the headings, run:
+
+```sh
+pnpm docs:toc
+```
+
+Research notes from the calibration (in Chinese) are in [`research/`](research/output/README.md).
+
+## Related
+
+> [!NOTE]
+>
+> This project is part of the [Project AIRI](https://github.com/moeru-ai/airi) ecosystem.
+
+## Acknowledgements
+
+- [重轻's Animalese tutorial](https://www.bilibili.com/video/BV1Mf4y1S7Gs) for the recipe
+- [`izure1/animalese-tts`](https://github.com/izure1/animalese-tts) for the Japanese mora table
+- [`Acedio/animalese.js`](https://github.com/Acedio/animalese.js) and [`stefanlegg/animalese-web`](https://github.com/stefanlegg/animalese-web)
+- [`Xinqwq/Animalese_Converter`](https://github.com/Xinqwq/Animalese_Converter) (ChineseGibberish)
+- [`pinyin-pro`](https://github.com/zh-lx/pinyin-pro), [`wanakana`](https://github.com/WaniKani/WanaKana), and [`es-hangul`](https://github.com/toss/es-hangul)
+- [`animal-island-ui`](https://github.com/guokaigdg/animal-island-ui) and [ChillRound](https://github.com/Warren2060/ChillRound)
+
+## License
+
+[MIT](LICENSE)
