@@ -10,6 +10,7 @@ import { LivePage } from './routes/live/LivePage'
 import { PipelinePage } from './routes/pipeline/PipelinePage'
 import { SpeakPage } from './routes/speak/SpeakPage'
 
+import './app/i18n'
 import '@proj-airi/font-chillroundm/index.css'
 import 'animal-island-ui/dist/index.css'
 import './styles/app.css'

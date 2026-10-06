@@ -3,8 +3,9 @@ import type { ScaleName, VoicePreset } from 'animalese'
 import { Button, Select } from 'animal-island-ui'
 import { createVoice, planSpeech, scales, unitLanguage, voicePresets } from 'animalese'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { languageNames, presetNames, useAnimalese } from '../../app/animalese'
+import { useAnimalese, useAnimaleseNames } from '../../app/animalese'
 import { useSpeech } from '../../app/speech'
 import { useVoice, useVoiceState } from '../../app/voice'
 import { MelodyPlot } from '../../components/charts/MelodyPlot'
@@ -17,6 +18,8 @@ import { TokenStrip } from '../../components/TokenStrip'
 
 /** The runtime half: one text, followed through segmentation, the two clocks, melody and playback. */
 export function RuntimeSteps({ firstIndex }: { firstIndex: number }) {
+  const { t } = useTranslation()
+  const { languageNames, presetNames } = useAnimaleseNames()
   const { banks } = useAnimalese()
   const voiceState = useVoiceState()
   const speech = useSpeech()
@@ -35,11 +38,11 @@ export function RuntimeSteps({ firstIndex }: { firstIndex: number }) {
   return (
     <>
       <div className="runtime-input">
-        <TextArea value={text} rows={2} onChange={event => setText(event.target.value)} aria-label="示例文字" />
+        <TextArea value={text} rows={2} onChange={event => setText(event.target.value)} aria-label={t('pipeline.exampleText')} />
         <label className="field inline">
-          <span>性格</span>
+          <span>{t('common.personality')}</span>
           <Select
-            aria-label="性格"
+            aria-label={t('common.personality')}
             value={voiceState.preset}
             onChange={key => voiceState.setPreset(key as VoicePreset)}
             options={Object.keys(voicePresets).map(key => ({ key, label: presetNames[key as VoicePreset] }))}
@@ -49,58 +52,58 @@ export function RuntimeSteps({ firstIndex }: { firstIndex: number }) {
 
       {plan && (
         <>
-          <StepCard id="analyze" index={firstIndex} title="切分" summary="按文字系统分段：汉字用 pinyin-pro 按上下文注音（银行 → hang），假名、谚文各自拆开，英文按音节切再映射到假名。轻声字（的、了、吗）标成弱读。">
+          <StepCard id="analyze" index={firstIndex} title={t('pipeline.steps.analyze')} summary={t('pipeline.summaries.analyze')}>
             <TokenStrip tokens={plan.tokens} />
             <p className="muted">
-              {`需要的声库：${plan.languages.map(code => languageNames[code]).join('、') || '无'}。虚线边框的是弱读字。`}
+              {t('pipeline.requiredBanks', { languages: plan.languages.map(code => languageNames[code]).join(', ') || t('common.none') })}
             </p>
           </StepCard>
 
-          <StepCard id="clocks" index={firstIndex + 1} title="两个时钟" summary="对话框按打字速度出字，声音按自己的节奏念：每一拍念刚出现的那个字，跟不上的字直接跳过，弱读字优先让位。对照游戏录屏，中文约 12 字/秒对 8–10 音/秒。">
+          <StepCard id="clocks" index={firstIndex + 1} title={t('pipeline.steps.clocks')} summary={t('pipeline.summaries.clocks')}>
             <div className="knobs">
-              <ParamSlider label="打字速度" value={knobs.textRate} min={4} max={24} step={0.5} format={value => `${value} 字/秒`} onChange={textRate => setKnobs({ textRate })} />
-              <ParamSlider label="最快语速" value={knobs.speed} min={3} max={20} step={0.5} format={value => `${value} 音/秒`} onChange={speed => setKnobs({ speed })} />
+              <ParamSlider label={t('common.textRate')} value={knobs.textRate} min={4} max={24} step={0.5} format={value => t('common.charsPerSecond', { value })} onChange={textRate => setKnobs({ textRate })} />
+              <ParamSlider label={t('common.maxSpeechRate')} value={knobs.speed} min={3} max={20} step={0.5} format={value => t('common.unitsPerSecond', { value })} onChange={speed => setKnobs({ speed })} />
             </div>
             <Timeline tokens={plan.tokens} plan={plan.schedule} />
             <TokenStrip tokens={plan.tokens} voiced={voiced} />
-            <p className="muted">{`${unitTokens} 个字，念出 ${voiced.size} 个，跳过 ${unitTokens - voiced.size} 个。`}</p>
+            <p className="muted">{t('pipeline.counts', { total: unitTokens, voiced: voiced.size, skipped: unitTokens - voiced.size })}</p>
           </StepCard>
 
-          <StepCard id="melody" index={firstIndex + 2} title="旋律" summary="在音阶上随机游走（越靠边越容易往回走），整句慢慢往下沉，问句最后几个音上扬，感叹句整体抬高。每个音尾部再略往下滑。种子默认来自文字，同一句话每次一样。">
+          <StepCard id="melody" index={firstIndex + 2} title={t('pipeline.steps.melody')} summary={t('pipeline.summaries.melody')}>
             <div className="knobs">
               <label className="field">
-                <span>音阶</span>
-                <Select aria-label="音阶" value={knobs.scale} onChange={key => setKnobs({ scale: key as ScaleName })} options={Object.keys(scales).map(key => ({ key, label: key }))} />
+                <span>{t('common.scale')}</span>
+                <Select aria-label={t('common.scale')} value={knobs.scale} onChange={key => setKnobs({ scale: key as ScaleName })} options={Object.keys(scales).map(key => ({ key, label: key }))} />
               </label>
-              <ParamSlider label="音域" value={knobs.range} min={0} max={8} step={1} format={value => `±${value} 级`} onChange={range => setKnobs({ range })} />
-              <ParamSlider label="起伏" value={knobs.liveliness} min={0} max={1} step={0.05} format={value => value.toFixed(2)} onChange={liveliness => setKnobs({ liveliness })} />
-              <ParamSlider label="尾音滑落" value={knobs.glide} min={-4} max={2} step={0.1} format={value => `${value.toFixed(1)} 半音`} onChange={glide => setKnobs({ glide })} />
+              <ParamSlider label={t('common.range')} value={knobs.range} min={0} max={8} step={1} format={value => `±${value} ${t('common.steps')}`} onChange={range => setKnobs({ range })} />
+              <ParamSlider label={t('common.liveliness')} value={knobs.liveliness} min={0} max={1} step={0.05} format={value => value.toFixed(2)} onChange={liveliness => setKnobs({ liveliness })} />
+              <ParamSlider label={t('common.glide')} value={knobs.glide} min={-4} max={2} step={0.1} format={value => `${value.toFixed(1)} ${t('common.semitones')}`} onChange={glide => setKnobs({ glide })} />
             </div>
             <MelodyPlot plan={plan.schedule} voice={plan.voice} />
             <div className="row">
-              <Button size="small" onClick={() => setSeed(Math.floor(Math.random() * 2 ** 32))}>换一个种子</Button>
-              {seed !== undefined && <Button size="small" type="text" onClick={() => setSeed(undefined)}>用回文字种子</Button>}
+              <Button size="small" onClick={() => setSeed(Math.floor(Math.random() * 2 ** 32))}>{t('pipeline.newSeed')}</Button>
+              {seed !== undefined && <Button size="small" type="text" onClick={() => setSeed(undefined)}>{t('pipeline.textSeed')}</Button>}
             </div>
           </StepCard>
 
-          <StepCard id="play" index={firstIndex + 3} title="播放" summary="每个音的播放速率 = 目标音高 ÷ 声库参考音，音高和时长一起变（磁带式）。超出时间槽的部分在下一个音之前收掉。声库按音高自动挑：低音角色用低音录音，共振峰才自然。">
+          <StepCard id="play" index={firstIndex + 3} title={t('pipeline.steps.play')} summary={t('pipeline.summaries.play')}>
             <DialogueBox name={`${presetNames[voiceState.preset]} · ${plan.bank ?? '…'}`} text={text} revealed={speech.revealed} />
             <div className="row">
-              <ParamSlider label="音高" value={knobs.baseHz} min={80} max={700} step={5} format={value => `${value} Hz`} onChange={baseHz => setKnobs({ baseHz })} />
+              <ParamSlider label={t('common.pitch')} value={knobs.baseHz} min={80} max={700} step={5} format={value => `${value} Hz`} onChange={baseHz => setKnobs({ baseHz })} />
             </div>
             <div className="row">
-              <Button type="primary" disabled={!voice || speech.playing} onClick={() => voice && speech.say(text, voice, { seed })}>说话！</Button>
+              <Button type="primary" disabled={!voice || speech.playing} onClick={() => voice && speech.say(text, voice, { seed })}>{t('common.speak')}</Button>
               {speech.error && <span className="banner error">{speech.error}</span>}
             </div>
             <div className="table-scroll">
               <table className="rate-table">
                 <thead>
                   <tr>
-                    <th scope="col">字</th>
-                    <th scope="col">单元</th>
-                    <th scope="col">开始</th>
-                    <th scope="col">目标音高</th>
-                    <th scope="col">播放速率</th>
+                    <th scope="col">{t('pipeline.table.text')}</th>
+                    <th scope="col">{t('pipeline.table.unit')}</th>
+                    <th scope="col">{t('pipeline.table.start')}</th>
+                    <th scope="col">{t('pipeline.table.targetPitch')}</th>
+                    <th scope="col">{t('pipeline.table.playbackRate')}</th>
                   </tr>
                 </thead>
                 <tbody>

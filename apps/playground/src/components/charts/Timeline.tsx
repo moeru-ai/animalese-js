@@ -1,6 +1,7 @@
 import type { Schedule, Token } from 'animalese'
 
 import { tokenLanguage } from 'animalese'
+import { useTranslation } from 'react-i18next'
 
 interface TimelineProps {
   tokens: readonly Token[]
@@ -18,6 +19,7 @@ const height = 132
  * have none.
  */
 export function Timeline({ tokens, plan }: TimelineProps) {
+  const { t } = useTranslation()
   const width = Math.max(320, Math.ceil(plan.duration * pxPerSecond) + 24)
   const x = (time: number): number => 12 + time * pxPerSecond
   const marks = new Map(plan.events.flatMap(event => event.type === 'mark' ? [[event.token, event.time] as const] : []))
@@ -26,9 +28,9 @@ export function Timeline({ tokens, plan }: TimelineProps) {
 
   return (
     <div className="timeline-scroll">
-      <svg className="timeline" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="文字时钟与声音时钟">
-        <text className="timeline-lane" x={4} y={laneText - 18}>文字</text>
-        <text className="timeline-lane" x={4} y={laneVoice + 30}>声音</text>
+      <svg className="timeline" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={t('charts.timeline')}>
+        <text className="timeline-lane" x={4} y={laneText - 18}>{t('charts.text')}</text>
+        <text className="timeline-lane" x={4} y={laneVoice + 30}>{t('charts.voice')}</text>
         <line className="timeline-axis" x1={0} x2={width} y1={laneText} y2={laneText} />
         <line className="timeline-axis" x1={0} x2={width} y1={laneVoice} y2={laneVoice} />
         {units.map(event => (
