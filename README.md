@@ -1,6 +1,10 @@
 # `animalese-js`
 
-[![License](https://badgen.net/github/license/moeru-ai/animalese-js)](LICENSE)
+[![License][license-src]][license-href]
+[![Node.js][node-src]][node-href]
+[![pnpm][pnpm-src]][pnpm-href]
+
+![Animalese playground](./docs/assets/playground.png)
 
 `animalese-js` makes Animal Crossing style speech ("Animalese") in TypeScript. You give it text in Chinese, Japanese, Korean, or English. It gives you the babble that the villagers speak, in time with the dialogue box.
 
@@ -303,3 +307,10 @@ Research notes from the calibration (in Chinese) are in [`research/`](research/o
 ## License
 
 [MIT](LICENSE)
+
+[license-src]: https://img.shields.io/github/license/moeru-ai/animalese-js?style=flat&labelColor=080f12&color=1fa669
+[license-href]: https://github.com/moeru-ai/animalese-js/blob/main/LICENSE
+[node-src]: https://img.shields.io/badge/node-%3E%3D24-1fa669?style=flat&labelColor=080f12&logo=node.js&logoColor=white
+[node-href]: https://nodejs.org/
+[pnpm-src]: https://img.shields.io/badge/pnpm-11-1fa669?style=flat&labelColor=080f12&logo=pnpm&logoColor=white
+[pnpm-href]: https://pnpm.io/
