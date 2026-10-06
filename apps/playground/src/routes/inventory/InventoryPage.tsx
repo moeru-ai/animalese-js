@@ -1,12 +1,14 @@
-import type { LanguageCode, LoadedBank, UnitDefinition } from 'animalese'
+import type { PcmBank } from '@animalese/dsp'
+import type { LanguageCode, UnitDefinition } from 'animalese'
 
+import { sliceUnit } from '@animalese/dsp'
 import { frontends } from 'animalese'
 import { useEffect, useState } from 'react'
 
 import { languageNames, useAnimalese } from '../../app/animalese'
 import { mobileQuery, useMediaQuery } from '../../app/media'
 import { Segmented } from '../../components/Segmented'
-import { audition } from './audition'
+import { useClipPlayer } from '../../components/useClipPlayer'
 import { EnglishMapper } from './EnglishMapper'
 import { SyllableChart } from './SyllableChart'
 import { UnitDetail } from './UnitDetail'
@@ -14,21 +16,22 @@ import { UnitDetail } from './UnitDetail'
 const languages = (['zh', 'ja', 'ko', 'en'] as const).map(value => ({ value, label: languageNames[value] }))
 
 const descriptions: Record<LanguageCode, string> = {
-  zh: '402 个无调音节，按声母 × 韵母排。每个音节用一个常用的单读音字让 TTS 读出来。',
+  zh: '402 个无调音节，按声母 × 韵母排，只在“拼音音节”模式下使用。默认的“假名”模式像游戏一样，把每个音节映射到最接近的假名，用日文声库发声。',
   ja: '101 个假名拍，按五十音图排，拗音单独成行。',
   ko: '19 个初声 × 17 个中声的开音节，收音不发。',
   en: '',
 }
 
 export function InventoryPage() {
-  const { animalese } = useAnimalese()
+  const { banks } = useAnimalese()
+  const playClip = useClipPlayer()
   const compact = useMediaQuery(mobileQuery)
   const [language, setLanguage] = useState<LanguageCode>('zh')
   const [chosenVoice, setChosenVoice] = useState<string>()
   const [selected, setSelected] = useState<UnitDefinition>()
-  const [loaded, setLoaded] = useState<LoadedBank>()
+  const [loaded, setLoaded] = useState<PcmBank>()
 
-  const voices = animalese?.library.voices ?? []
+  const voices = banks?.voices ?? []
   const voice = chosenVoice ?? voices[0]
   const inventory = frontends[language].inventory
   const unit = selected?.id.startsWith(`${language}/`) ? selected : inventory[0]
@@ -37,22 +40,23 @@ export function InventoryPage() {
 
   const select = (next: UnitDefinition) => {
     setSelected(next)
-    if (animalese && bank)
-      audition(animalese, bank, next.id)
+    const baked = bank?.manifest.units[next.id]
+    if (bank && baked)
+      playClip(sliceUnit(bank.samples, baked), bank.manifest.sampleRate)
   }
 
   useEffect(() => {
-    if (!animalese || !voice || language === 'en')
+    if (!banks || !voice || language === 'en')
       return
     let cancelled = false
-    animalese.library.load(voice, [language]).then((banks) => {
+    void banks.load(voice, [language]).then(([next]) => {
       if (!cancelled)
-        setLoaded(banks[language])
+        setLoaded(next)
     })
     return () => {
       cancelled = true
     }
-  }, [animalese, voice, language])
+  }, [banks, voice, language])
 
   return (
     <div className="stack">

@@ -1,13 +1,15 @@
 import type { BankIndexEntry, BankManifest, UnitDefinition } from '@animalese/core'
 import type { PcmBank, PrepareOptions } from '@animalese/dsp'
 import type { Frontend } from '@animalese/g2p'
+import type { Banks } from 'animalese'
 
 import type { Recorder } from './recorder.ts'
 
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises'
-import { join } from 'node:path'
+import { dirname, join } from 'node:path'
 
 import { convertSampleRate, decodeBank, encodeWav, measureUnit, packSprite, prepareUnit, snapToSemitone } from '@animalese/dsp'
+import { createBanks } from 'animalese'
 
 export interface BakeOptions {
   frontend: Frontend
@@ -127,8 +129,17 @@ export async function writeBankIndex(outDir: string): Promise<BankIndexEntry[]> 
   return entries
 }
 
-/** Reads a baked bank directory into memory, for rendering in Node with `renderSchedule`. */
+/** Reads one baked bank directory into memory. */
 export async function readBank(directory: string): Promise<PcmBank> {
   const manifest = JSON.parse(await readFile(join(directory, 'manifest.json'), 'utf8')) as BankManifest
   return decodeBank(manifest, await readFile(join(directory, manifest.sprite)))
+}
+
+/**
+ * Reads a bank directory (with its `index.json`) from disk, for `createVoice` in Node.js.
+ * Banks load on first use.
+ */
+export async function loadBanksFromDirectory(directory: string): Promise<Banks> {
+  const entries = JSON.parse(await readFile(join(directory, 'index.json'), 'utf8')) as BankIndexEntry[]
+  return createBanks(entries, entry => readBank(join(directory, dirname(entry.manifest))))
 }

@@ -6,6 +6,7 @@ import { hashString } from '@animalese/core'
 import { getInitialAndFinal, pinyin } from 'pinyin-pro'
 
 import { nonUnitToken } from '../shared.ts'
+import { pinyinToKana } from './kana.ts'
 import { syllables } from './syllables.ts'
 
 const syllableNames = Object.keys(syllables)
@@ -43,14 +44,14 @@ const inventory: UnitDefinition[] = syllableNames.map(name => ({
 }))
 
 /**
- * Mandarin frontend: one unit per character, keyed by its toneless pinyin syllable.
+ * Mandarin: one unit per character, from its toneless pinyin syllable.
  *
  * pinyin-pro resolves polyphones from context (e.g. 银行 → hang, 行走 → xing), which is
  * as close as we can get to "what the subtitle says" without the game's own tables.
  * Tones are dropped on purpose; the melody comes from the scheduler instead. Neutral-tone
  * syllables are flagged `weak` so the scheduler can skip them when the voice falls behind.
  */
-function analyze(text: string, offset = 0): Token[] {
+function analyzeWith(text: string, offset: number, unitOf: (syllable: string) => { unit: string, language?: 'zh' }): Token[] {
   const items = pinyin(text, { type: 'all', toneType: 'none', v: true })
   const tokens: Token[] = []
   let cursor = 0
@@ -63,12 +64,12 @@ function analyze(text: string, offset = 0): Token[] {
     const syllable = item.isZh ? item.pinyin.replace('ü', 'v') : digits[item.origin]
     if (syllable && syllables[syllable]) {
       // Neutral tone (的、了、吗、们…) marks the syllables the voice may skip first.
-      tokens.push({ kind: 'unit', unit: `zh/${syllable}`, ...base, ...(item.isZh && item.num === 0 && { weak: true }) })
+      tokens.push({ kind: 'unit', ...unitOf(syllable), ...base, ...(item.isZh && item.num === 0 && { weak: true }) })
     }
     else if (item.isZh) {
       // Rare characters without a reading still get a stable, plausible syllable.
       const fallback = syllableNames[hashString(item.origin) % syllableNames.length]!
-      tokens.push({ kind: 'unit', unit: `zh/${fallback}`, ...base })
+      tokens.push({ kind: 'unit', ...unitOf(fallback), ...base })
     }
     else {
       tokens.push(nonUnitToken(item.origin, at))
@@ -77,4 +78,20 @@ function analyze(text: string, offset = 0): Token[] {
   return tokens
 }
 
-export const zh: Frontend = { language: 'zh', inventory, analyze }
+/** Mandarin with its own syllables: every character voices its toneless pinyin syllable. */
+export const zh: Frontend = {
+  language: 'zh',
+  inventory,
+  analyze: (text, offset = 0) => analyzeWith(text, offset, syllable => ({ unit: `zh/${syllable}` })),
+}
+
+/**
+ * Mandarin as the game voices it: each syllable maps to the nearest kana from the Japanese
+ * bank. ACNH has one shared Kana bank for every language, and whole Mandarin syllables are
+ * too easy to understand, which is not the effect of Animalese.
+ */
+export const zhKana: Frontend = {
+  language: 'zh',
+  inventory: [],
+  analyze: (text, offset = 0) => analyzeWith(text, offset, syllable => ({ unit: `ja/${pinyinToKana(syllable)}`, language: 'zh' })),
+}

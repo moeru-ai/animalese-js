@@ -1,23 +1,35 @@
+import type { Banks } from 'animalese'
 import type { ReactNode } from 'react'
 
-import type { AnimaleseState } from './animalese'
-
 import { errorMessageFrom } from '@moeru/std'
-import { createAnimalese } from 'animalese'
-import { useEffect, useState } from 'react'
+import { loadBanks } from 'animalese'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { AnimaleseContext } from './animalese'
 
 const indexUrl = `${import.meta.env.BASE_URL}banks/index.json`
 
 export function AnimaleseProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AnimaleseState>({ animalese: null, error: null })
+  const [banks, setBanks] = useState<Banks | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const contextRef = useRef<AudioContext | null>(null)
 
   useEffect(() => {
-    createAnimalese({ banks: new URL(indexUrl, location.href) })
-      .then(animalese => setState({ animalese, error: null }))
-      .catch((cause: unknown) => setState({ animalese: null, error: errorMessageFrom(cause) ?? String(cause) }))
+    loadBanks(new URL(indexUrl, location.href))
+      .then(setBanks)
+      .catch((cause: unknown) => setError(errorMessageFrom(cause) ?? String(cause)))
   }, [])
 
-  return <AnimaleseContext value={state}>{children}</AnimaleseContext>
+  const value = useMemo(() => ({
+    banks,
+    error,
+    audioContext: () => {
+      contextRef.current ??= new AudioContext()
+      if (contextRef.current.state === 'suspended')
+        void contextRef.current.resume()
+      return contextRef.current
+    },
+  }), [banks, error])
+
+  return <AnimaleseContext value={value}>{children}</AnimaleseContext>
 }

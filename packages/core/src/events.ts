@@ -30,3 +30,25 @@ export interface Schedule {
   /** Seconds until the last unit stops ringing. */
   duration: number
 }
+
+/** A token of the input text appears at `time`, for text reveal in sync with the audio. */
+export interface SpeechMark {
+  time: number
+  /** Index of the token among all tokens of the speech. */
+  token: number
+  text: string
+  /** Offsets (UTF-16) in the whole input text. */
+  start: number
+  end: number
+}
+
+/** One piece of streamed speech audio. */
+export interface SpeechChunk {
+  /** Mono samples in [-1, 1]. */
+  samples: Float32Array
+  sampleRate: number
+  /** Seconds from the start of the speech to the first sample. */
+  time: number
+  /** Tokens that appear while this chunk plays, in order. */
+  marks: SpeechMark[]
+}

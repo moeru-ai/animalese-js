@@ -1,35 +1,29 @@
-import type { LoadedBank, UnitDefinition } from 'animalese'
+import type { PcmBank } from '@animalese/dsp'
+import type { UnitDefinition } from 'animalese'
 
+import { sliceUnit } from '@animalese/dsp'
 import { Button } from 'animal-island-ui'
 import { useMemo } from 'react'
 
-import { useAnimalese } from '../../app/animalese'
 import { SignalView } from '../../components/charts/SignalView'
-import { audition } from './audition'
+import { useClipPlayer } from '../../components/useClipPlayer'
 
 interface UnitDetailProps {
   unit: UnitDefinition
-  bank: LoadedBank | undefined
+  bank: PcmBank | undefined
   /** Drop the waveform, for the small card docked above the mobile tab bar. */
   compact?: boolean
 }
 
 /** The selected unit: what was recorded, what came out of baking, and how it sounds. */
 export function UnitDetail({ unit, bank, compact = false }: UnitDetailProps) {
-  const { animalese } = useAnimalese()
+  const playClip = useClipPlayer()
   const baked = bank?.manifest.units[unit.id]
-
-  const samples = useMemo(() => {
-    if (!bank || !baked)
-      return undefined
-    // The sprite was decoded at the buffer's rate, which may differ from the manifest's.
-    const ratio = bank.buffer.sampleRate / bank.manifest.sampleRate
-    return bank.buffer.getChannelData(0).subarray(Math.round(baked.offset * ratio), Math.round((baked.offset + baked.length) * ratio))
-  }, [bank, baked])
-
+  const samples = useMemo(() => bank && baked ? sliceUnit(bank.samples, baked) : undefined, [bank, baked])
+  // Playing faster or slower moves the pitch by octaves, as the runtime does.
   const listen = (octaves: number) => {
-    if (animalese && bank)
-      audition(animalese, bank, unit.id, octaves)
+    if (bank && samples)
+      playClip(samples, bank.manifest.sampleRate, 2 ** octaves)
   }
 
   return (
@@ -44,7 +38,7 @@ export function UnitDetail({ unit, bank, compact = false }: UnitDetailProps) {
       {baked && bank && samples
         ? (
             <>
-              {!compact && <SignalView samples={samples} sampleRate={bank.buffer.sampleRate} pitch={{ minHz: 60, maxHz: 900 }} referenceHz={bank.manifest.referenceHz} />}
+              {!compact && <SignalView samples={samples} sampleRate={bank.manifest.sampleRate} pitch={{ minHz: 60, maxHz: 900 }} referenceHz={bank.manifest.referenceHz} />}
               <dl className="facts">
                 <div>
                   <dt>时长</dt>

@@ -1,13 +1,19 @@
-import type { Animalese, LanguageCode, VoicePreset } from 'animalese'
+import type { Banks, LanguageCode, VoicePreset } from 'animalese'
 
 import { createContext, use } from 'react'
 
 export interface AnimaleseState {
-  animalese: Animalese | null
+  banks: Banks | null
   error: string | null
+  /** The shared playback context, created and resumed on demand (call it in a user gesture). */
+  audioContext: () => AudioContext
 }
 
-export const AnimaleseContext = createContext<AnimaleseState>({ animalese: null, error: null })
+export const AnimaleseContext = createContext<AnimaleseState>({
+  banks: null,
+  error: null,
+  audioContext: () => new AudioContext(),
+})
 
 export function useAnimalese(): AnimaleseState {
   return use(AnimaleseContext)

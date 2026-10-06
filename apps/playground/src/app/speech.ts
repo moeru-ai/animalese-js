@@ -1,62 +1,62 @@
-import type { Playback, SpeechOptions } from 'animalese'
+import type { Playback, SpeechInput, SpeechOptions, Voice } from 'animalese'
 
 import { errorMessageFrom } from '@moeru/std'
+import { playSpeech, streamSpeech } from 'animalese'
 import { useRef, useState } from 'react'
 
 import { useAnimalese } from './animalese'
 
 export interface Speech {
-  say: (text: string, options: SpeechOptions) => Promise<void>
+  /** Speaks text, or text that streams in, and resolves when playback ends. */
+  say: (input: SpeechInput, voice: Voice, options?: SpeechOptions) => Promise<void>
   stop: () => void
   /** Characters revealed so far while speaking, `null` when idle. */
   revealed: number | null
-  /** Token being revealed or voiced, -1 when idle. */
+  /** Token being revealed, -1 when idle. */
   active: number
-  busy: boolean
+  playing: boolean
   error: string
 }
 
-/** Speaks text and tracks the reveal, for any page with a dialogue box. */
+/** Speaks through the shared audio context and tracks the reveal, for any page with a dialogue box. */
 export function useSpeech(): Speech {
-  const { animalese } = useAnimalese()
+  const { audioContext } = useAnimalese()
   const [revealed, setRevealed] = useState<number | null>(null)
   const [active, setActive] = useState(-1)
-  const [busy, setBusy] = useState(false)
+  const [playing, setPlaying] = useState(false)
   const [error, setError] = useState('')
   const playbackRef = useRef<Playback | null>(null)
 
   const stop = () => playbackRef.current?.stop()
 
-  const say = async (text: string, options: SpeechOptions) => {
-    if (!animalese)
-      return
+  const say = async (input: SpeechInput, voice: Voice, options: SpeechOptions = {}) => {
     stop()
     setError('')
-    setBusy(true)
     setRevealed(0)
+    setPlaying(true)
+    const playback = playSpeech(streamSpeech(input, voice, options), {
+      context: audioContext(),
+      onMark: (mark) => {
+        setActive(mark.token)
+        setRevealed(mark.end)
+      },
+    })
+    playbackRef.current = playback
     try {
-      // Same text and options give the same plan `say` will use, so its tokens map events to text.
-      const { tokens } = animalese.plan(text, options)
-      const playback = await animalese.say(text, {
-        ...options,
-        onEvent: (event) => {
-          setActive(event.token)
-          setRevealed(tokens[event.token]!.end)
-        },
-      })
-      playbackRef.current = playback
-      setBusy(false)
       await playback.finished
     }
     catch (cause) {
       setError(errorMessageFrom(cause) ?? String(cause))
     }
     finally {
-      setBusy(false)
-      setRevealed(null)
-      setActive(-1)
+      if (playbackRef.current === playback) {
+        playbackRef.current = null
+        setPlaying(false)
+        setRevealed(null)
+        setActive(-1)
+      }
     }
   }
 
-  return { say, stop, revealed, active, busy, error }
+  return { say, stop, revealed, active, playing, error }
 }

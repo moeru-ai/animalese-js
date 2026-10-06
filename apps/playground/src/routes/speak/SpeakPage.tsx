@@ -2,12 +2,13 @@ import type { LanguageCode } from 'animalese'
 
 import { errorMessageFrom } from '@moeru/std'
 import { Button, Drawer, Tag } from 'animal-island-ui'
+import { createVoice, generateSpeech, planSpeech } from 'animalese'
 import { useMemo, useState } from 'react'
 
 import { languageNames, presetNames, useAnimalese } from '../../app/animalese'
 import { mobileQuery, useMediaQuery } from '../../app/media'
 import { useSpeech } from '../../app/speech'
-import { useVoiceState } from '../../app/voice'
+import { useVoice, useVoiceState } from '../../app/voice'
 import { DialogueBox } from '../../components/DialogueBox'
 import { Segmented } from '../../components/Segmented'
 import { TextArea } from '../../components/TextArea'
@@ -24,39 +25,46 @@ const samples = [
 
 type LanguageChoice = LanguageCode | 'auto'
 
+// The game voices every language with one shared Kana bank; whole syllables are easy to understand.
+const chineseOptions = [
+  { value: 'kana', label: '中文：假名（像游戏）' },
+  { value: 'syllables', label: '中文：拼音音节' },
+] as const
+
 const languageOptions = [
   { value: 'auto', label: '自动' },
   ...Object.entries(languageNames).map(([value, label]) => ({ value: value as LanguageCode, label })),
 ] as const
 
 export function SpeakPage() {
-  const { animalese } = useAnimalese()
+  const { banks } = useAnimalese()
   const voiceState = useVoiceState()
   const mobile = useMediaQuery(mobileQuery)
   const [text, setText] = useState(samples[0]!)
   const [language, setLanguage] = useState<LanguageChoice>('auto')
+  const [chinese, setChinese] = useState<'kana' | 'syllables'>('kana')
   const [bank, setBank] = useState('auto')
   const [panelOpen, setPanelOpen] = useState(false)
   const [rendering, setRendering] = useState(false)
   const [renderError, setRenderError] = useState('')
   const speech = useSpeech()
+  const voice = useVoice(banks, voiceState.input, bank)
 
-  const options = useMemo(() => ({ language, voice: voiceState.voice, bank: bank === 'auto' ? undefined : bank }), [language, voiceState.voice, bank])
-  const plan = useMemo(() => animalese?.plan(text, options), [animalese, text, options])
+  // Plan with a snapshot of the knobs; the playing voice reads them live.
+  const plan = useMemo(() => banks && planSpeech(text, createVoice(banks, voiceState.input, { bank: bank === 'auto' ? undefined : bank }), { language, chinese }), [banks, text, language, chinese, voiceState.input, bank])
   const voiced = useMemo(() => new Set(plan?.schedule.events.flatMap(event => event.type === 'unit' ? [event.token] : [])), [plan])
   const unitCount = plan?.tokens.filter(token => token.kind === 'unit').length ?? 0
-  const playing = speech.revealed !== null
   const error = speech.error || renderError
 
   const download = async () => {
-    if (!animalese)
+    if (!voice)
       return
     setRendering(true)
     setRenderError('')
     try {
-      const blob = await animalese.render(text, options)
+      const wav = await generateSpeech(text, voice, { language, chinese })
       const link = document.createElement('a')
-      link.href = URL.createObjectURL(blob)
+      link.href = URL.createObjectURL(new Blob([wav as Uint8Array<ArrayBuffer>], { type: 'audio/wav' }))
       link.download = `animalese-${plan?.bank ?? 'voice'}.wav`
       link.click()
       URL.revokeObjectURL(link.href)
@@ -73,8 +81,8 @@ export function SpeakPage() {
     <VoicePanel
       state={voiceState}
       bank={bank}
-      banks={animalese?.library.voices ?? []}
-      autoBank={animalese?.library.voiceFor(voiceState.knobs.baseHz)}
+      banks={banks?.voices ?? []}
+      autoBank={banks?.voiceFor(voiceState.knobs.baseHz)}
       onBankChange={setBank}
     />
   )
@@ -96,12 +104,13 @@ export function SpeakPage() {
 
         <div className="row wrap">
           <Segmented label="语言" value={language} options={languageOptions} onChange={setLanguage} />
+          <Segmented label="中文发音" value={chinese} options={chineseOptions} onChange={setChinese} />
         </div>
 
         <div className="row wrap actions">
-          {playing && !speech.busy
+          {speech.playing
             ? <Button type="primary" danger onClick={speech.stop}>停止</Button>
-            : <Button type="primary" loading={speech.busy} disabled={!plan || unitCount === 0} onClick={() => speech.say(text, options)}>说话！</Button>}
+            : <Button type="primary" disabled={!voice || unitCount === 0} onClick={() => voice && speech.say(text, voice, { language, chinese })}>说话！</Button>}
           <Button loading={rendering} disabled={!plan || unitCount === 0} onClick={download}>导出 WAV</Button>
           {mobile && <Button type="dashed" onClick={() => setPanelOpen(true)}>调声线</Button>}
           {plan && (

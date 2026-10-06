@@ -5,11 +5,12 @@ import type { Frontend } from './shared.ts'
 import { en } from './en/index.ts'
 import { ja } from './ja/index.ts'
 import { ko } from './ko/index.ts'
-import { zh } from './zh/index.ts'
+import { zh, zhKana } from './zh/index.ts'
 
 export { en, enLetters, syllabify } from './en/index.ts'
 export type { Frontend } from './shared.ts'
-export { ja, ko, zh }
+export { ja, ko, zh, zhKana }
+export { pinyinToKana } from './zh/kana.ts'
 
 export const frontends: Record<LanguageCode, Frontend> = { zh, ja, ko, en }
 
@@ -23,6 +24,14 @@ export interface AnalyzeOptions {
    * Fixing the language to zh or ja sends every Han character to that language.
    */
   language?: LanguageCode | 'auto'
+  /** Added to every token offset, when `text` is a piece of a longer text. */
+  offset?: number
+  /**
+   * How Chinese is voiced. `kana` (the default) maps each syllable to the nearest kana from
+   * the Japanese bank, as the game's shared Kana bank does. `syllables` uses whole Mandarin
+   * syllables from the Chinese bank, which is much easier to understand.
+   */
+  chinese?: 'kana' | 'syllables'
 }
 
 type Script = 'han' | 'hiragana' | 'katakana' | 'hangul' | 'latin' | 'neutral'
@@ -94,5 +103,10 @@ export function analyze(text: string, options: AnalyzeOptions = {}): Token[] {
     }
   })
 
-  return runs.flatMap((run, index) => frontends[languages[index]!].analyze(text.slice(run.start, run.end), run.start))
+  const offset = options.offset ?? 0
+  const chinese = options.chinese === 'syllables' ? zh : zhKana
+  return runs.flatMap((run, index) => {
+    const language = languages[index]!
+    return (language === 'zh' ? chinese : frontends[language]).analyze(text.slice(run.start, run.end), offset + run.start)
+  })
 }

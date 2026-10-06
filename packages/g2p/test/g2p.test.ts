@@ -1,15 +1,16 @@
 import type { Token } from '@animalese/core'
 
+import { tokenLanguage } from '@animalese/core'
 import { describe, expect, it } from 'vitest'
 
 import { syllabify } from '../src/en/index.ts'
-import { analyze, detectLanguage, enLetters, frontends } from '../src/index.ts'
+import { analyze, detectLanguage, enLetters, frontends, ja, pinyinToKana, zh } from '../src/index.ts'
 
 const names = (tokens: Token[]): string[] => tokens.map(token => token.kind === 'unit' ? token.unit : token.kind === 'pause' ? `|${token.pause}` : '_')
 
 describe('zh', () => {
   it('reads polyphones from context and drops tones', () => {
-    expect(names(analyze('银行行走'))).toEqual(['zh/yin', 'zh/hang', 'zh/xing', 'zh/zou'])
+    expect(names(analyze('银行行走', { chinese: 'syllables' }))).toEqual(['zh/yin', 'zh/hang', 'zh/xing', 'zh/zou'])
   })
 
   it('marks neutral-tone characters weak', () => {
@@ -18,13 +19,35 @@ describe('zh', () => {
   })
 
   it('maps ü to v and reads digits', () => {
-    expect(names(analyze('绿女3'))).toEqual(['zh/lv', 'zh/nv', 'zh/san'])
+    expect(names(analyze('绿女3', { chinese: 'syllables' }))).toEqual(['zh/lv', 'zh/nv', 'zh/san'])
   })
 
   it('keeps offsets aligned with the source text', () => {
     const text = '“你好”，世界！'
     for (const token of analyze(text))
       expect(text.slice(token.start, token.end)).toBe(token.text)
+  })
+})
+
+describe('zh as kana', () => {
+  it('maps each syllable to the nearest kana by default', () => {
+    expect(names(analyze('你好，我们去银行'))).toEqual(['ja/ni', 'ja/ha', '|comma', 'ja/o', 'ja/me', 'ja/chu', 'ja/i', 'ja/ha'])
+  })
+
+  it('keeps the Chinese source language and the weak flags', () => {
+    const tokens = analyze('我们吃饭了吗')
+    expect(tokens.every(token => token.kind === 'unit' && tokenLanguage(token) === 'zh')).toBe(true)
+    expect(tokens.filter(token => token.kind === 'unit' && token.weak).map(token => token.text)).toEqual(['们', '了', '吗'])
+  })
+
+  it('uses yōon for finals with a medial i, and drops nasal codas', () => {
+    expect(['liang', 'xiang', 'jia', 'zhi', 'shi', 'feng', 'ng'].map(pinyinToKana)).toEqual(['rya', 'sha', 'ja', 'ju', 'shu', 'he', 'n'])
+  })
+
+  it('maps every syllable of the inventory to a real kana unit', () => {
+    const kana = new Set(ja.inventory.map(unit => unit.id.slice(3)))
+    for (const unit of zh.inventory)
+      expect(kana).toContain(pinyinToKana(unit.id.slice(3)))
   })
 })
 
@@ -80,18 +103,18 @@ describe('routing', () => {
   })
 
   it('reads Han characters as Chinese when the only kana is katakana', () => {
-    const languages = analyze('我买了ラッキー的东西').flatMap(token => token.kind === 'unit' ? [token.unit.slice(0, 2)] : [])
+    const languages = analyze('我买了ラッキー的东西').flatMap(token => token.kind === 'unit' ? [tokenLanguage(token)] : [])
     // ラッキー is ra, (ッ pauses), ki, ー → i.
     expect(languages).toEqual(['zh', 'zh', 'zh', 'ja', 'ja', 'ja', 'zh', 'zh', 'zh'])
   })
 
   it('follows a fixed language for Han characters', () => {
     expect(analyze('天気', { language: 'ja' }).every(token => token.kind === 'unit' && token.unit.startsWith('ja/'))).toBe(true)
-    expect(analyze('天气', { language: 'zh' }).every(token => token.kind === 'unit' && token.unit.startsWith('zh/'))).toBe(true)
+    expect(analyze('天气', { language: 'zh' }).every(token => token.kind === 'unit' && tokenLanguage(token) === 'zh')).toBe(true)
   })
 
   it('turns punctuation into pauses and other symbols into silent tokens', () => {
-    expect(names(analyze('好，「好」！'))).toEqual(['zh/hao', '|comma', '_', 'zh/hao', '_', '|exclaim'])
+    expect(names(analyze('好，「好」！'))).toEqual(['ja/ha', '|comma', '_', 'ja/ha', '_', '|exclaim'])
   })
 
   it('handles empty text', () => {
@@ -99,7 +122,7 @@ describe('routing', () => {
   })
 
   it('sends each script to its own frontend', () => {
-    const languages = analyze('我有 Switch 和 ラッキー').flatMap(token => token.kind === 'unit' ? [token.language ?? token.unit.slice(0, 2)] : [])
+    const languages = analyze('我有 Switch 和 ラッキー').flatMap(token => token.kind === 'unit' ? [tokenLanguage(token)] : [])
     expect(new Set(languages)).toEqual(new Set(['zh', 'en', 'ja']))
   })
 

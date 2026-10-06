@@ -48,62 +48,101 @@ Open the URL that Vite shows. The repository includes baked voice banks, so the 
 ### Speak in the Browser
 
 ```ts
-import { createAnimalese } from 'animalese'
+import { createVoice, loadBanks, playSpeech, streamSpeech } from 'animalese'
 
-const animalese = await createAnimalese({ banks: '/banks/index.json' })
+const banks = await loadBanks('/banks/index.json')
+const voice = createVoice(banks, { preset: 'peppy' })
 
 // Browsers start audio only after a user gesture.
-button.onclick = () => animalese.say('哎呀，你来啦！', { voice: { preset: 'peppy' } })
+button.onclick = () => playSpeech(streamSpeech('哎呀，你来啦！', voice))
 ```
 
-`createAnimalese()` returns three main functions:
+A voice has two parts:
 
-- `say(text, options)` plays the text and calls `onEvent` as each character appears.
-- `plan(text, options)` gives the tokens, the timeline, and the selected voice bank. It does not touch audio.
-- `render(text, options)` gives a WAV file as a `Blob`.
+- The settings: a preset, a preset with changes such as `{ preset: 'cranky', speed: 7 }`, or a full `VoiceOptions` object.
+- The bank: a recorded voice. If you do not give `{ bank }` as the third argument, the voice uses the bank recorded closest to its pitch.
 
-Each call accepts a `voice` and a `bank`:
+### Get the Speech in Other Forms
 
-- `voice` is a preset, a preset with changes such as `{ preset: 'cranky', speed: 7 }`, or a full `VoiceOptions` object.
-- `bank` is the name of a recorded voice. If you do not give it, the library selects the voice that was recorded closest to `voice.baseHz`.
-
-### Compose the Steps Yourself
-
-The lower-level packages let you control each step:
+`streamSpeech()` gives a `ReadableStream` of chunks. Each chunk has mono samples and the marks of the tokens that appear while it plays. Use the chunks in one of these ways:
 
 ```ts
-import { schedule } from '@animalese/core'
-import { analyze } from '@animalese/g2p'
-import { BankLibrary, play } from '@animalese/web'
+import { generateSpeech, playSpeech, streamSpeech, toMediaStream } from 'animalese'
 
-const tokens = analyze('今日はいい天気ですね')
-const timeline = schedule(tokens, { preset: 'lazy' })
-const library = await BankLibrary.fromIndex('/banks/index.json')
+// Play it, and reveal the text in time with the sound.
+playSpeech(streamSpeech(text, voice), { onMark: mark => reveal(mark.end) })
 
-play(new AudioContext(), await library.load('nova', ['ja']), timeline)
+// Get a MediaStream for an <audio> element, MediaRecorder, or WebRTC.
+audio.srcObject = toMediaStream(streamSpeech(text, voice)).stream
+
+// Get a WAV file.
+const wav = await generateSpeech(text, voice)
+```
+
+`planSpeech(text, voice)` gives the tokens, the timeline, the selected bank, and the missing languages. It does not touch audio.
+
+### Stream Text In
+
+The text can also stream in, for example from an LLM or from speech recognition. The audio follows as the text arrives:
+
+```ts
+import { createVoice, playSpeech, streamSpeech, textStreamFromSpeechRecognition } from 'animalese'
+
+// Chrome and Safari name it `webkitSpeechRecognition`.
+const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition
+const recognition = new Recognition()
+recognition.lang = 'zh-CN'
+recognition.continuous = true
+
+playSpeech(streamSpeech(textStreamFromSpeechRecognition(recognition), voice))
+recognition.start()
+```
+
+`streamSpeech()` accepts a `string`, a `ReadableStream<string>`, or an `AsyncIterable<string>`. These rules apply to streamed text:
+
+- The library speaks a word only after the word is complete, so a piece of text can stop in the middle of a word.
+- If no text arrives for 500 ms (`idleMs`), the current sentence ends as if a full stop was typed. Then its last units can play.
+- Speech recognition gives final results only. Speech that has played cannot be taken back.
+
+### Change the Voice While It Speaks
+
+Give `createVoice()` a function instead of an object. The library reads the function again before each unit. A signal, such as an `alien-signals` `computed`, works as is:
+
+```ts
+import { computed, signal } from 'alien-signals'
+
+const pitch = signal(300)
+const voice = createVoice(banks, computed(() => ({ preset: 'peppy', baseHz: pitch() })))
+
+playSpeech(streamSpeech(text, voice))
+pitch(500) // The units after this point use the higher pitch.
 ```
 
 ### Render in Node.js
 
-Node.js has no Web Audio. Use the renderer in `@animalese/dsp` instead:
+The stream does not need Web Audio, so `generateSpeech()` works in Node.js too:
 
 ```ts
-import { readBank } from '@animalese/bake'
-import { schedule } from '@animalese/core'
-import { bankResolver, encodeWav, renderSchedule } from '@animalese/dsp'
-import { analyze } from '@animalese/g2p'
+import { writeFile } from 'node:fs/promises'
 
-const banks = [await readBank('apps/playground/public/banks/zh-nova')]
-const timeline = schedule(analyze('你好呀'), { preset: 'peppy' })
-const samples = renderSchedule(timeline, bankResolver(banks), 44100)
-const wav = encodeWav({ samples, sampleRate: 44100 })
+import { loadBanksFromDirectory } from '@animalese/bake'
+import { createVoice, generateSpeech } from 'animalese'
+
+const banks = await loadBanksFromDirectory('apps/playground/public/banks')
+const voice = createVoice(banks, { preset: 'cranky' })
+
+await writeFile('hello.wav', await generateSpeech('嘿，过得还好吗？', voice))
 ```
 
 The CLI does the same in one command:
 
 ```sh
-pnpm say --bank apps/playground/public/banks/zh-onyx --text '嘿，过得还好吗？' --preset cranky --out hello.wav
+pnpm say --text '嘿，过得还好吗？' --preset cranky --out hello.wav
 ```
+
+### Compose the Steps Yourself
+
+The lower-level packages give you each step: `analyze()` from `@animalese/g2p`, `createScheduler()` and `schedule()` from `@animalese/core`, and `createRenderer()` from `@animalese/dsp`. The `animalese` package connects these steps.
 
 ### Bake Voice Banks
 
@@ -131,7 +170,7 @@ This project uses the recipe of the [Animalese tutorial by 重轻](https://www.b
 4. Raise the pitch.
 5. Snap the pitch to a musical scale.
 
-The tutorial does these steps by hand in a DAW. `animalese-js` does steps 1, 2, and the flat pitch offline. At runtime, it only splits text, plans the timeline and the melody, and changes the playback rate.
+The tutorial does these steps by hand in a DAW. `animalese-js` does steps 1, 2, and the flat pitch offline. At runtime, it only splits text, plans the timeline and the melody, and changes the playback rate. All runtime steps work on streamed text: each step adds to its output as new text arrives.
 
 ```mermaid
 flowchart LR
@@ -157,10 +196,12 @@ A voice bank holds every unit of one language, recorded with one TTS voice:
 
 | Language | Units | Carrier text for the recording |
 | --- | --- | --- |
-| Chinese | 402 toneless syllables | One common character for each syllable, from the first level of GB2312. The generator prefers characters with one reading, then the first tone. |
+| Chinese | 402 toneless syllables, used only with `chinese: 'syllables'` | One common character for each syllable, from the first level of GB2312. The generator prefers characters with one reading, then the first tone. |
 | Japanese | 101 kana morae, with yōon | The kana |
 | Korean | 323 open syllables (19 initials × 17 vowels) | The syllable |
 | English | No units of its own | English syllables use the nearest kana from the Japanese bank. |
+
+By default, Chinese also uses the Japanese bank. Each pinyin syllable maps to the nearest kana: the initial selects the kana row, and the main vowel selects the column. The game has one shared Kana bank for all languages. Whole Mandarin syllables are too easy to understand, and Animalese is not meant to be understood. To use the Chinese bank, give `chinese: 'syllables'` to `streamSpeech()` or `generateSpeech()`.
 
 The baker does these steps on each voiced unit:
 
@@ -199,16 +240,17 @@ The recordings do not show if the game selects the skipped characters on purpose
 
 | Package | Purpose |
 | --- | --- |
-| [`animalese`](https://github.com/moeru-ai/animalese-js/tree/main/packages/animalese) | Entry point. `createAnimalese()` connects the analysis, the timeline, the bank selection, and playback. |
-| [`@animalese/core`](https://github.com/moeru-ai/animalese-js/tree/main/packages/core) | Types, voice presets, language pacing, the two clocks (`revealTimes`, `voiceClock`), the melody (`shapeMelody`), and `schedule()`. It has no dependencies. |
+| [`animalese`](https://github.com/moeru-ai/animalese-js/tree/main/packages/animalese) | Entry point: `loadBanks()`, `createVoice()`, `streamSpeech()`, `generateSpeech()`, and `planSpeech()`. It also exports the common parts of the other packages. |
+| [`@animalese/core`](https://github.com/moeru-ai/animalese-js/tree/main/packages/core) | Types, voice presets, language pacing, the two clocks (`TextClock`, `VoiceClock`), the melody (`Melody`), and the incremental `createScheduler()`. It has no dependencies. |
 | [`@animalese/g2p`](https://github.com/moeru-ai/animalese-js/tree/main/packages/g2p) | Language front ends: Chinese with `pinyin-pro`, Japanese with `wanakana`, Korean with `es-hangul`, and English syllables mapped to kana. It also routes mixed-script text and holds the unit inventories. |
-| [`@animalese/dsp`](https://github.com/moeru-ai/animalese-js/tree/main/packages/dsp) | Audio processing in plain TypeScript: WAV, resampling, YIN pitch tracking, TD-PSOLA, unit preparation, sprite packing, and offline rendering. |
-| [`@animalese/web`](https://github.com/moeru-ai/animalese-js/tree/main/packages/web) | `BankLibrary` (index, bank selection by pitch, cached loading), `play()`, `render()`, and `renderWav()` with Web Audio. |
-| [`@animalese/bake`](https://github.com/moeru-ai/animalese-js/tree/main/packages/bake) | The baker: a cached recorder for OpenAI-compatible TTS, `bakeBank()`, `readBank()`, and the `animalese-bake` CLI. |
+| [`@animalese/dsp`](https://github.com/moeru-ai/animalese-js/tree/main/packages/dsp) | Audio processing in plain TypeScript: WAV, resampling, YIN pitch tracking, TD-PSOLA, unit preparation, sprite packing, and the streaming renderer. |
+| [`@animalese/web`](https://github.com/moeru-ai/animalese-js/tree/main/packages/web) | Web Audio tools: `playSpeech()`, `toMediaStream()`, and `textStreamFromSpeechRecognition()`. |
+| [`@animalese/bake`](https://github.com/moeru-ai/animalese-js/tree/main/packages/bake) | The baker: a cached recorder for OpenAI-compatible TTS, `bakeBank()`, `loadBanksFromDirectory()`, and the `animalese-bake` CLI. |
 
-The [playground](https://github.com/moeru-ai/animalese-js/tree/main/apps/playground) uses Vite, React, React Router, Base UI, and [`animal-island-ui`](https://github.com/guokaigdg/animal-island-ui). It has three pages:
+The [playground](https://github.com/moeru-ai/animalese-js/tree/main/apps/playground) uses Vite, React, React Router, Base UI, and [`animal-island-ui`](https://github.com/guokaigdg/animal-island-ui). It has four pages:
 
 - **说话 (Speak)**: Type text and see the dialogue box appear with the voice. You can export WAV files.
+- **实时 (Live)**: Speak into the microphone or type, and hear the babble as the text arrives. The voice changes while it speaks when you move a slider. The output can go to the speakers or to a `MediaStream`.
 - **词表 (Inventory)**: See each unit on the syllable chart of its language, and listen to it.
 - **原理 (Pipeline)**: See each step of the pipeline, with controls. The offline steps run the real DSP code in the browser, on built-in recordings or on your microphone.
 

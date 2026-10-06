@@ -8,7 +8,7 @@ import { decodeWav } from '@animalese/dsp'
 import { ja } from '@animalese/g2p'
 import { describe, expect, it } from 'vitest'
 
-import { bakeBank, cachedRecorder, readBank } from '../src/index.ts'
+import { bakeBank, cachedRecorder, loadBanksFromDirectory, readBank } from '../src/index.ts'
 
 /** A fake TTS: every unit is a sine whose pitch depends on the carrier, with silence around it. */
 function sineRecorder(calls: string[]): Recorder {
@@ -46,6 +46,10 @@ describe('bakeBank', () => {
     const index = JSON.parse(await readFile(join(outDir, 'index.json'), 'utf8'))
     expect(index).toEqual([expect.objectContaining({ id: 'ja-voice', language: 'ja', units: 4, manifest: 'ja-voice/manifest.json' })])
     expect((await readBank(join(outDir, 'ja-voice'))).samples.length).toBe(sprite.samples.length)
+
+    const banks = await loadBanksFromDirectory(outDir)
+    expect(banks.voices).toEqual(['voice'])
+    expect((await banks.load('voice', ['ja']))[0]?.manifest.id).toBe('ja-voice')
   })
 
   it('reuses cached recordings', async () => {

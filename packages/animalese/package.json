@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "description": "Animal Crossing style speech for the browser: text in, babble out",
+  "description": "Animal Crossing style speech: text in, babble out, as a stream, a file or a MediaStream",
   "license": "MIT",
   "sideEffects": false,
   "exports": {
@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@animalese/core": "workspace:^",
+    "@animalese/dsp": "workspace:^",
     "@animalese/g2p": "workspace:^",
     "@animalese/web": "workspace:^"
   }

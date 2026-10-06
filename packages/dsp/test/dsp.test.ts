@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { decodeWav, encodeWav, estimatePitch, flattenPitch, measureUnit, packSprite, prepareUnit, renderSchedule, resample, rms, sliceUnit, snapToSemitone, trimConsonant, trimSilence } from '../src/index.ts'
+import { createRenderer, decodeWav, encodeWav, estimatePitch, flattenPitch, measureUnit, packSprite, prepareUnit, renderSchedule, resample, rms, sliceUnit, snapToSemitone, softClip, trimConsonant, trimSilence } from '../src/index.ts'
 
 const rate = 24000
 function sine(hz: number, seconds: number, amplitude = 0.5): Float32Array {
@@ -115,5 +115,55 @@ describe('glide', () => {
     }, () => ({ samples: sine(220, 2), sampleRate: rate, referenceHz: 220 }), rate)
     expect(estimatePitch(output.subarray(0, rate * 0.06), rate)).toBeGreaterThan(200)
     expect(estimatePitch(output.subarray(rate * 0.34, rate * 0.4), rate)).toBeLessThan(130)
+  })
+})
+
+describe('createRenderer', () => {
+  const source = { samples: sine(220, 0.3), sampleRate: rate, referenceHz: 220 }
+  const events = [0, 0.07, 0.14, 0.4].map((time, token) => ({ type: 'unit' as const, unit: 'zh/a', time, hz: 330, glide: -1, gain: 0.9, maxDuration: 0.1, token }))
+
+  it('renders the same samples in pieces as in one go', () => {
+    const whole = createRenderer(() => source, rate)
+    events.forEach(event => whole.add(event))
+    const expected = whole.take(0.6)
+
+    const pieces = createRenderer(() => source, rate)
+    const parts: Float32Array[] = []
+    for (const event of events) {
+      parts.push(pieces.take(event.time))
+      pieces.add(event)
+    }
+    parts.push(pieces.take(0.6))
+    const joined = new Float32Array(expected.length)
+    let offset = 0
+    for (const part of parts) {
+      joined.set(part, offset)
+      offset += part.length
+    }
+    expect(joined).toEqual(expected)
+  })
+
+  it('refuses a unit that starts before the render position', () => {
+    const renderer = createRenderer(() => source, rate)
+    renderer.take(0.2)
+    expect(() => renderer.add(events[1]!)).toThrow(RangeError)
+  })
+
+  it('accepts a source per unit', () => {
+    const renderer = createRenderer(undefined, rate)
+    renderer.add(events[0]!)
+    expect(rms(renderer.take(0.05))).toBe(0)
+    renderer.add({ ...events[0]!, time: 0.05 }, source)
+    expect(rms(renderer.take(0.1))).toBeGreaterThan(0)
+  })
+})
+
+describe('softClip', () => {
+  it('leaves quiet samples alone and keeps loud ones below 1', () => {
+    expect(softClip(0.5)).toBe(0.5)
+    expect(softClip(-0.8)).toBe(-0.8)
+    expect(softClip(3)).toBeLessThan(1)
+    expect(softClip(-3)).toBeGreaterThan(-1)
+    expect(softClip(0.9)).toBeLessThan(0.9)
   })
 })

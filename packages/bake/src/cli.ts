@@ -7,11 +7,11 @@ import { writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { parseArgs } from 'node:util'
 
-import { schedule, voicePresets } from '@animalese/core'
-import { bankResolver, encodeWav, renderSchedule } from '@animalese/dsp'
+import { bankLanguages, voicePresets } from '@animalese/core'
 import { analyze, frontends } from '@animalese/g2p'
+import { createVoice, generateSpeech } from 'animalese'
 
-import { bakeBank, readBank } from './bake.ts'
+import { bakeBank, loadBanksFromDirectory } from './bake.ts'
 import { cachedRecorder, openAISpeechRecorder } from './recorder.ts'
 
 const usage = `animalese-bake <command> [options]
@@ -33,7 +33,9 @@ bake options:
   --max-ms <n>           Longest unit after retuning (default: 260)
 
 say options:
-  --bank <dir,...>       Bank directories (one per language used in the text)
+  --banks <dir>          Bank directory with index.json (default: apps/playground/public/banks)
+  --bank <voice>         Recorded voice to use (default: closest to the pitch)
+  --chinese <mode>       kana (default, like the game) or syllables (whole Mandarin syllables)
   --text <text>          Text to speak
   --out <file>           Output WAV (default: animalese.wav)
   --preset <name>        ${Object.keys(voicePresets).join(', ')}
@@ -56,6 +58,8 @@ const { positionals, values } = parseArgs({
     'concurrency': { type: 'string', default: '6' },
     'max-ms': { type: 'string', default: '260' },
     'bank': { type: 'string' },
+    'banks': { type: 'string' },
+    'chinese': { type: 'string', default: 'kana' },
     'text': { type: 'string' },
     'preset': { type: 'string', default: 'normal' },
     'hz': { type: 'string' },
@@ -108,33 +112,22 @@ async function bake(): Promise<void> {
 async function say(): Promise<void> {
   if (!values.text)
     throw new Error('--text is required')
-  const banks = await Promise.all(list(values.bank).map(directory => readBank(resolve(directory))))
-  const tokens = analyze(values.text)
-  const plan = schedule(tokens, {
+  const banks = await loadBanksFromDirectory(resolve(values.banks ?? 'apps/playground/public/banks'))
+  const voice = createVoice(banks, {
     preset: values.preset as VoicePreset,
     ...(values.hz && { baseHz: Number(values.hz) }),
     ...(values['text-rate'] && { textRate: Number(values['text-rate']) }),
     ...(values.speed && { speed: Number(values.speed) }),
     ...(values.seed && { seed: Number(values.seed) }),
-  })
-
-  const resolveUnit = bankResolver(banks)
-  const missing = new Set<string>()
-  const sampleRate = 44100
-  const samples = renderSchedule(plan, (unit) => {
-    const source = resolveUnit(unit)
-    if (!source)
-      missing.add(unit)
-    return source
-  }, sampleRate)
-
+  }, { bank: values.bank })
+  const chinese = values.chinese === 'syllables' ? 'syllables' : 'kana'
+  const wav = await generateSpeech(values.text, voice, { sampleRate: 44100, chinese })
   const out = resolve(values.out ?? 'animalese.wav')
-  await writeFile(out, encodeWav({ samples, sampleRate }))
-  if (missing.size)
-    process.stderr.write(`missing units: ${[...missing].join(' ')}\n`)
-  const voiced = plan.events.filter(event => event.type === 'unit').length
-  const units = tokens.filter(token => token.kind === 'unit').length
-  process.stderr.write(`${out}: ${plan.duration.toFixed(2)}s, ${voiced}/${units} units voiced\n`)
+  await writeFile(out, wav)
+  const missing = banks.missing(voice.bank ?? '', bankLanguages(analyze(values.text, { chinese })))
+  if (missing.length > 0)
+    process.stderr.write(`bank ${voice.bank} has no ${missing.join(', ')}; those units are silent\n`)
+  process.stderr.write(`${out}: ${((wav.length - 44) / 2 / 44100).toFixed(2)}s with bank ${voice.bank}\n`)
 }
 
 function inventory(): void {

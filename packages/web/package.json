@@ -3,7 +3,7 @@
   "type": "module",
   "version": "0.0.0",
   "private": true,
-  "description": "Web Audio playback for Animalese voice banks",
+  "description": "Play Animalese speech streams with Web Audio, as a MediaStream, and from speech recognition",
   "license": "MIT",
   "sideEffects": false,
   "exports": {
@@ -25,7 +25,6 @@
     "typecheck": "tsc --noEmit && tsc --noEmit -p test"
   },
   "dependencies": {
-    "@animalese/core": "workspace:^",
-    "@animalese/dsp": "workspace:^"
+    "@animalese/core": "workspace:^"
   }
 }

@@ -1,5 +1,3 @@
-import type { BankIndexEntry, BankManifest } from '@animalese/core'
-
 import { vi } from 'vitest'
 
 /** A test double that implements only what the code under test touches. */
@@ -10,80 +8,39 @@ export function stub<T>(partial: Partial<T>): T {
 // Only the node-to-node overload is used, which returns its argument for chaining.
 const connect = ((next: AudioNode) => next) as AudioNode['connect']
 
+export interface FakeSource {
+  start: ReturnType<typeof vi.fn>
+  stop: ReturnType<typeof vi.fn>
+  length: number
+  sampleRate: number
+}
+
 /** Just enough of an AudioContext for the player; tests drive `currentTime` by hand. */
 export function fakeAudioContext() {
-  const sources: { start: ReturnType<typeof vi.fn>, stop: ReturnType<typeof vi.fn>, rates: ReturnType<typeof vi.fn> }[] = []
+  const sources: FakeSource[] = []
   const clock = { currentTime: 0 }
+  const mediaStream = stub<MediaStream>({ id: 'fake-stream' })
   const context = stub<AudioContext>({
     get currentTime() {
       return clock.currentTime
     },
     state: 'running',
     destination: stub<AudioDestinationNode>({ connect }),
-    createGain: () => stub<GainNode>({ connect, gain: stub<AudioParam>({ setValueAtTime: vi.fn(), linearRampToValueAtTime: vi.fn() }) }),
+    createBuffer: (_channels: number, length: number, sampleRate: number) => stub<AudioBuffer>({ length, sampleRate, copyToChannel: vi.fn() }),
     createBufferSource: () => {
-      const source = { start: vi.fn(), stop: vi.fn(), rates: vi.fn() }
-      sources.push(source)
-      return stub<AudioBufferSourceNode>({
-        connect,
-        buffer: null,
-        playbackRate: stub<AudioParam>({ setValueAtTime: source.rates, exponentialRampToValueAtTime: vi.fn() }),
-        start: source.start,
-        stop: source.stop,
+      const node = { start: vi.fn(), stop: vi.fn(), length: 0, sampleRate: 0 }
+      sources.push(node)
+      const source = stub<AudioBufferSourceNode>({ connect, start: node.start, stop: node.stop })
+      // Record the buffer when the player assigns it.
+      return Object.defineProperty(source, 'buffer', {
+        get: () => null,
+        set: (buffer: AudioBuffer) => {
+          node.length = buffer.length
+          node.sampleRate = buffer.sampleRate
+        },
       })
     },
+    createMediaStreamDestination: () => stub<MediaStreamAudioDestinationNode>({ connect, stream: mediaStream }),
   })
-  return { context, clock, sources }
-}
-
-export function manifest(language: 'zh' | 'ja', voice: string, referenceHz: number): BankManifest {
-  return {
-    format: 'animalese-bank@1',
-    id: `${language}-${voice}`,
-    language,
-    voice,
-    source: 'test',
-    sampleRate: 24000,
-    referenceHz,
-    sprite: 'sprite.wav',
-    units: { [`${language}/a`]: { offset: 2400, length: 2400, f0: referenceHz } },
-    createdAt: '',
-  }
-}
-
-export function entry(language: 'zh' | 'ja', voice: string, referenceHz: number): BankIndexEntry {
-  return { id: `${language}-${voice}`, language, voice, source: 'test', referenceHz, units: 1, manifest: `${language}-${voice}/manifest.json` }
-}
-
-/** Serves `index.json`, manifests and sprites from memory and records every request. */
-export function fakeServer(entries: BankIndexEntry[]) {
-  const requests: string[] = []
-  let failNext = false
-  const fetcher = vi.fn<typeof fetch>(async (input) => {
-    const url = input instanceof Request ? input.url : String(input)
-    requests.push(url)
-    if (failNext) {
-      failNext = false
-      return new Response('nope', { status: 500 })
-    }
-    if (url.endsWith('index.json'))
-      return Response.json(entries)
-    const match = url.match(/\/(\w+)-(\w+)\/(manifest\.json|sprite\.wav)$/)
-    if (!match)
-      return new Response('missing', { status: 404 })
-    const [, language, voice, file] = match
-    const found = entries.find(item => item.id === `${language}-${voice}`)!
-    return file === 'manifest.json'
-      ? Response.json(manifest(language as 'zh', voice!, found.referenceHz))
-      : new Response(new ArrayBuffer(8))
-  })
-  const decoder = stub<BaseAudioContext>({ decodeAudioData: vi.fn(async () => stub<AudioBuffer>({ duration: 1 })) })
-  return {
-    fetch: fetcher,
-    context: decoder,
-    requests,
-    failNext: () => {
-      failNext = true
-    },
-  }
+  return { context, clock, sources, mediaStream }
 }

@@ -1,99 +1,116 @@
-import type { Schedule, SpeechEvent, UnitEvent } from '@animalese/core'
+import type { SpeechChunk, SpeechMark } from '@animalese/core'
 
-import type { BankSet } from './bank.ts'
-
-import { unitLanguage } from '@animalese/core'
-import { encodeWav } from '@animalese/dsp'
-
-const releaseSeconds = 0.012
-
-function scheduleUnit(context: BaseAudioContext, banks: BankSet, event: UnitEvent, at: number, destination: AudioNode): AudioScheduledSourceNode | undefined {
-  const bank = banks[unitLanguage(event.unit)]
-  const unit = bank?.manifest.units[event.unit]
-  if (!bank || !unit)
-    return undefined
-
-  const start = at + event.time
-  const cut = start + event.maxDuration
-  const rate = event.hz / bank.manifest.referenceHz
-
-  const source = context.createBufferSource()
-  source.buffer = bank.buffer
-  source.playbackRate.setValueAtTime(rate, start)
-  source.playbackRate.exponentialRampToValueAtTime(rate * 2 ** (event.glide / 12), cut)
-
-  const gain = context.createGain()
-  gain.gain.setValueAtTime(event.gain, start)
-  gain.gain.setValueAtTime(event.gain, cut)
-  gain.gain.linearRampToValueAtTime(0, cut + releaseSeconds)
-  source.connect(gain).connect(destination)
-
-  source.start(start, unit.offset / bank.manifest.sampleRate, unit.length / bank.manifest.sampleRate)
-  source.stop(cut + releaseSeconds)
-  return source
-}
-
-export interface PlayOptions {
+export interface PlaySpeechOptions {
+  /** Defaults to a new `AudioContext`. Create it in a user gesture, or browsers keep it silent. */
+  context?: AudioContext
   /** Defaults to `context.destination`. */
   destination?: AudioNode
-  /** Called as each event's time is reached, e.g. to reveal text in sync. */
-  onEvent?: (event: SpeechEvent) => void
+  /** Called as each token appears, in time with the audio, for example to reveal text. */
+  onMark?: (mark: SpeechMark) => void
+  /** Delay before the first chunk plays, in seconds, to absorb a slow first chunk. Defaults to 0.05. */
+  latency?: number
 }
 
 export interface Playback {
+  readonly context: AudioContext
+  /** Stops the sound and stops reading the stream. */
   stop: () => void
-  /** Resolves when playback ends or is stopped. */
+  /** Resolves when the last chunk has played, or after `stop`. */
   finished: Promise<void>
 }
 
-/** Plays a schedule in real time. Every unit is scheduled up front on the audio clock. */
-export function play(context: AudioContext, banks: BankSet, plan: Schedule, options: PlayOptions = {}): Playback {
+/**
+ * Plays a speech stream through Web Audio. Chunks are queued back to back on the audio
+ * clock. If the stream falls behind, for example while live text is quiet, playback waits
+ * and continues when the next chunk arrives.
+ */
+export function playSpeech(stream: ReadableStream<SpeechChunk>, options: PlaySpeechOptions = {}): Playback {
+  const context = options.context ?? new AudioContext()
   const destination = options.destination ?? context.destination
-  // A little headroom so the first unit is not late on a busy main thread.
-  const at = context.currentTime + 0.05
-  const sources = plan.events.flatMap(event => event.type === 'unit' ? scheduleUnit(context, banks, event, at, destination) ?? [] : [])
+  const latency = options.latency ?? 0.05
+  if (context.state === 'suspended')
+    void context.resume()
 
+  const reader = stream.getReader()
+  const sources: AudioBufferSourceNode[] = []
+  const timers = new Set<ReturnType<typeof setTimeout>>()
   let next = 0
-  let timer: ReturnType<typeof setInterval> | undefined
-  let resolve!: () => void
-  const finished = new Promise<void>((done) => {
-    resolve = done
+  let stopped = false
+
+  const later = (seconds: number, callback: () => void): void => {
+    const timer = setTimeout(() => {
+      timers.delete(timer)
+      callback()
+    }, Math.max(0, seconds * 1000))
+    timers.add(timer)
+  }
+
+  const schedule = (chunk: SpeechChunk): void => {
+    const start = Math.max(next, context.currentTime + (sources.length === 0 ? latency : 0.02))
+    if (chunk.samples.length > 0) {
+      const buffer = context.createBuffer(1, chunk.samples.length, chunk.sampleRate)
+      buffer.copyToChannel(chunk.samples as Float32Array<ArrayBuffer>, 0)
+      const source = context.createBufferSource()
+      source.buffer = buffer
+      source.connect(destination)
+      source.start(start)
+      sources.push(source)
+    }
+    next = start + chunk.samples.length / chunk.sampleRate
+    for (const mark of chunk.marks)
+      later(start + (mark.time - chunk.time) - context.currentTime, () => options.onMark?.(mark))
+  }
+
+  let halt!: () => void
+  const halted = new Promise<void>((resolve) => {
+    halt = resolve
   })
+
+  const played = (async () => {
+    try {
+      for (;;) {
+        const read = await reader.read()
+        // `stop` sets `stopped` while this loop waits for the next chunk.
+        if (read.done || stopped)
+          break
+        schedule(read.value)
+      }
+    }
+    finally {
+      reader.releaseLock()
+    }
+    if (!stopped)
+      await new Promise<void>(resolve => later(next - context.currentTime, resolve))
+  })()
+  // `stop` ends the wait too, even while the last chunk is still playing.
+  const finished = Promise.race([played, halted])
+
   const stop = (): void => {
-    clearInterval(timer)
+    stopped = true
+    halt()
+    void reader.cancel().catch(() => {})
+    for (const timer of timers)
+      clearTimeout(timer)
+    timers.clear()
     for (const source of sources) {
       try {
         source.stop()
       }
       catch {}
     }
-    resolve()
   }
-  timer = setInterval(() => {
-    const elapsed = context.currentTime - at
-    while (next < plan.events.length && plan.events[next]!.time <= elapsed) {
-      // Advance outside the optional call: `f?.(x++)` skips `x++` when `f` is undefined.
-      const event = plan.events[next++]!
-      options.onEvent?.(event)
-    }
-    if (elapsed >= plan.duration + releaseSeconds)
-      stop()
-  }, 10)
-  return { stop, finished }
+
+  return { context, stop, finished: finished.catch(() => {}) }
 }
 
-/** Renders a schedule offline into mono samples. */
-export async function render(banks: BankSet, plan: Schedule, sampleRate = 44100): Promise<Float32Array> {
-  const context = new OfflineAudioContext(1, Math.ceil((plan.duration + 0.1) * sampleRate), sampleRate)
-  for (const event of plan.events) {
-    if (event.type === 'unit')
-      scheduleUnit(context, banks, event, 0, context.destination)
-  }
-  return (await context.startRendering()).getChannelData(0)
-}
+export interface MediaStreamOptions extends Omit<PlaySpeechOptions, 'destination'> {}
 
-/** Renders a schedule offline into a 16-bit mono WAV file. */
-export async function renderWav(banks: BankSet, plan: Schedule, sampleRate = 44100): Promise<Blob> {
-  const wav = encodeWav({ samples: await render(banks, plan, sampleRate), sampleRate })
-  return new Blob([wav as Uint8Array<ArrayBuffer>], { type: 'audio/wav' })
+/**
+ * Turns a speech stream into a live `MediaStream`, for a `<video>` or `<audio>` element,
+ * `MediaRecorder` or WebRTC. Stopping the returned playback stops the stream.
+ */
+export function toMediaStream(stream: ReadableStream<SpeechChunk>, options: MediaStreamOptions = {}): Playback & { stream: MediaStream } {
+  const context = options.context ?? new AudioContext()
+  const destination = context.createMediaStreamDestination()
+  return { ...playSpeech(stream, { ...options, context, destination }), stream: destination.stream }
 }

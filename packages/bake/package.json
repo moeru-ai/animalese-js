@@ -33,6 +33,7 @@
   "dependencies": {
     "@animalese/core": "workspace:^",
     "@animalese/dsp": "workspace:^",
-    "@animalese/g2p": "workspace:^"
+    "@animalese/g2p": "workspace:^",
+    "animalese": "workspace:^"
   }
 }

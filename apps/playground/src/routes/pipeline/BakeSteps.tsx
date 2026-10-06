@@ -18,7 +18,7 @@ const ms = (samples: Float32Array): string => `${Math.round(samples.length / sam
 
 /** The offline half, run live on one recording with the same code the baker uses. */
 export function BakeSteps({ firstIndex }: { firstIndex: number }) {
-  const { animalese } = useAnimalese()
+  const { audioContext } = useAnimalese()
   const playClip = useClipPlayer()
   const [clips, setClips] = useState<DemoClip[]>([])
   const [clipId, setClipId] = useState('zh/hao')
@@ -60,12 +60,10 @@ export function BakeSteps({ firstIndex }: { firstIndex: number }) {
   }, [raw, leadMs, referenceHz, maxMs])
 
   const record = async () => {
-    if (!animalese)
-      return
     setMicError('')
     setRecording(true)
     try {
-      setRaw(await recordMicrophone(animalese.audioContext()))
+      setRaw(await recordMicrophone(audioContext()))
       setClipId('mic')
     }
     catch (cause) {

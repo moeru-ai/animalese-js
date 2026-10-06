@@ -1,12 +1,12 @@
 import type { ScaleName, VoicePreset } from 'animalese'
 
 import { Button, Select } from 'animal-island-ui'
-import { scales, unitLanguage, voicePresets } from 'animalese'
+import { createVoice, planSpeech, scales, unitLanguage, voicePresets } from 'animalese'
 import { useMemo, useState } from 'react'
 
 import { languageNames, presetNames, useAnimalese } from '../../app/animalese'
 import { useSpeech } from '../../app/speech'
-import { useVoiceState } from '../../app/voice'
+import { useVoice, useVoiceState } from '../../app/voice'
 import { MelodyPlot } from '../../components/charts/MelodyPlot'
 import { Timeline } from '../../components/charts/Timeline'
 import { DialogueBox } from '../../components/DialogueBox'
@@ -17,19 +17,20 @@ import { TokenStrip } from '../../components/TokenStrip'
 
 /** The runtime half: one text, followed through segmentation, the two clocks, melody and playback. */
 export function RuntimeSteps({ firstIndex }: { firstIndex: number }) {
-  const { animalese } = useAnimalese()
+  const { banks } = useAnimalese()
   const voiceState = useVoiceState()
   const speech = useSpeech()
   const [text, setText] = useState('我也很喜欢秋天，因为万圣节的时候可以得到好多糖果呢？')
   const [seed, setSeed] = useState<number>()
   const { knobs, setKnobs } = voiceState
 
-  const options = useMemo(() => ({ voice: { ...voiceState.voice, seed } }), [voiceState.voice, seed])
-  const plan = useMemo(() => animalese?.plan(text, options), [animalese, text, options])
+  const voice = useVoice(banks, voiceState.input)
+  // Plan with a snapshot of the knobs; the playing voice reads them live.
+  const plan = useMemo(() => banks && planSpeech(text, createVoice(banks, voiceState.input), { seed }), [banks, text, seed, voiceState.input])
   const units = plan?.schedule.events.filter(event => event.type === 'unit') ?? []
   const voiced = new Set(units.map(event => event.token))
   const unitTokens = plan?.tokens.filter(token => token.kind === 'unit').length ?? 0
-  const referenceHz = (unit: string) => animalese?.library.entries.find(entry => entry.voice === plan?.bank && entry.language === unitLanguage(unit))?.referenceHz
+  const referenceHz = (unit: string) => banks?.entries.find(entry => entry.voice === plan?.bank && entry.language === unitLanguage(unit))?.referenceHz
 
   return (
     <>
@@ -88,7 +89,7 @@ export function RuntimeSteps({ firstIndex }: { firstIndex: number }) {
               <ParamSlider label="音高" value={knobs.baseHz} min={80} max={700} step={5} format={value => `${value} Hz`} onChange={baseHz => setKnobs({ baseHz })} />
             </div>
             <div className="row">
-              <Button type="primary" loading={speech.busy} onClick={() => speech.say(text, options)}>说话！</Button>
+              <Button type="primary" disabled={!voice || speech.playing} onClick={() => voice && speech.say(text, voice, { seed })}>说话！</Button>
               {speech.error && <span className="banner error">{speech.error}</span>}
             </div>
             <div className="table-scroll">

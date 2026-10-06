@@ -418,6 +418,12 @@ code {
   gap: 14px;
 }
 
+/* Live */
+
+.media-output {
+  width: 100%;
+}
+
 /* Inventory */
 
 .inventory {

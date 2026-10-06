@@ -111,6 +111,9 @@ importers:
       '@animalese/core':
         specifier: workspace:^
         version: link:../core
+      '@animalese/dsp':
+        specifier: workspace:^
+        version: link:../dsp
       '@animalese/g2p':
         specifier: workspace:^
         version: link:../g2p
@@ -129,6 +132,9 @@ importers:
       '@animalese/g2p':
         specifier: workspace:^
         version: link:../g2p
+      animalese:
+        specifier: workspace:^
+        version: link:../animalese
 
   packages/core: {}
 
@@ -158,9 +164,6 @@ importers:
       '@animalese/core':
         specifier: workspace:^
         version: link:../core
-      '@animalese/dsp':
-        specifier: workspace:^
-        version: link:../dsp
 
 packages:
 
