@@ -2,6 +2,7 @@ import type { PitchOptions } from '@animalese/dsp'
 
 import { trackPitch } from '@animalese/dsp'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface Region {
   start: number
@@ -31,6 +32,7 @@ const yOfHz = (hz: number): number => height - (Math.log2(hz / minHz) / Math.log
 
 /** Waveform (min/max per column) with an optional pitch track on a log-frequency axis. */
 export function SignalView({ samples, sampleRate, pitch, referenceHz, regions = [], seconds }: SignalViewProps) {
+  const { t } = useTranslation()
   const total = Math.max(1, Math.round((seconds ?? samples.length / sampleRate) * sampleRate))
   const xOf = (sample: number): number => (sample / total) * width
 
@@ -61,7 +63,7 @@ export function SignalView({ samples, sampleRate, pitch, referenceHz, regions = 
   const loudest = Math.max(1e-6, ...track.map(frame => frame.rms))
 
   return (
-    <svg className="signal" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={`${(samples.length / sampleRate * 1000).toFixed(0)} 毫秒的波形`}>
+    <svg className="signal" viewBox={`0 0 ${width} ${height}`} preserveAspectRatio="none" role="img" aria-label={t('charts.waveform', { duration: (samples.length / sampleRate * 1000).toFixed(0) })}>
       {regions.map(region => (
         <g key={`${region.start}-${region.label}`}>
           <rect className="signal-region" x={xOf(region.start)} width={Math.max(0, xOf(region.end) - xOf(region.start))} y={0} height={height} />

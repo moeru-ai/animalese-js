@@ -1,6 +1,7 @@
 import type { Schedule, VoiceOptions } from 'animalese'
 
 import { degreeToSemitones, scales } from 'animalese'
+import { useTranslation } from 'react-i18next'
 
 interface MelodyPlotProps {
   plan: Schedule
@@ -16,6 +17,7 @@ const height = 200
  * unit's glide; the dashed line is `baseHz`.
  */
 export function MelodyPlot({ plan, voice }: MelodyPlotProps) {
+  const { t } = useTranslation()
   const units = plan.events.filter(event => event.type === 'unit')
   const width = Math.max(320, Math.ceil(plan.duration * pxPerSecond) + 24)
   const center = height / 2
@@ -26,7 +28,7 @@ export function MelodyPlot({ plan, voice }: MelodyPlotProps) {
 
   return (
     <div className="timeline-scroll">
-      <svg className="melody" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label="旋律">
+      <svg className="melody" width={width} height={height} viewBox={`0 0 ${width} ${height}`} role="img" aria-label={t('charts.melody')}>
         {grid.map(value => <line key={value} className={value % 12 === 0 ? 'melody-tonic' : 'melody-grid'} x1={0} x2={width} y1={y(value)} y2={y(value)} />)}
         <line className="melody-base" x1={0} x2={width} y1={center} y2={center} />
         {units.map((event) => {

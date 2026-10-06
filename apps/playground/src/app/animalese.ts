@@ -1,6 +1,7 @@
 import type { Banks, LanguageCode, VoicePreset } from 'animalese'
 
 import { createContext, use } from 'react'
+import { useTranslation } from 'react-i18next'
 
 export interface AnimaleseState {
   banks: Banks | null
@@ -19,13 +20,6 @@ export function useAnimalese(): AnimaleseState {
   return use(AnimaleseContext)
 }
 
-export const languageNames: Record<LanguageCode, string> = {
-  zh: '中文',
-  ja: '日本語',
-  ko: '한국어',
-  en: 'English',
-}
-
 export const languageColors = {
   zh: 'app-red',
   ja: 'app-pink',
@@ -33,14 +27,24 @@ export const languageColors = {
   en: 'app-green',
 } as const satisfies Record<LanguageCode, string>
 
-/** Chinese names of the villager personalities. */
-export const presetNames: Record<VoicePreset, string> = {
-  normal: '普通',
-  peppy: '元气',
-  cranky: '暴躁',
-  lazy: '悠闲',
-  snooty: '成熟',
-  jock: '运动',
-  smug: '自恋',
-  sisterly: '大姐头',
+export function useAnimaleseNames(): { languageNames: Record<LanguageCode, string>, presetNames: Record<VoicePreset, string> } {
+  const { t } = useTranslation()
+  return {
+    languageNames: {
+      zh: t('language.zh'),
+      ja: t('language.ja'),
+      ko: t('language.ko'),
+      en: t('language.en'),
+    },
+    presetNames: {
+      normal: t('preset.normal'),
+      peppy: t('preset.peppy'),
+      cranky: t('preset.cranky'),
+      lazy: t('preset.lazy'),
+      snooty: t('preset.snooty'),
+      jock: t('preset.jock'),
+      smug: t('preset.smug'),
+      sisterly: t('preset.sisterly'),
+    },
+  }
 }

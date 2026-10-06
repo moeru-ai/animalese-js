@@ -4,8 +4,9 @@ import { errorMessageFrom } from '@moeru/std'
 import { Button, Drawer, Tag } from 'animal-island-ui'
 import { createVoice, generateSpeech, planSpeech } from 'animalese'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { languageNames, presetNames, useAnimalese } from '../../app/animalese'
+import { useAnimalese, useAnimaleseNames } from '../../app/animalese'
 import { mobileQuery, useMediaQuery } from '../../app/media'
 import { useSpeech } from '../../app/speech'
 import { useVoice, useVoiceState } from '../../app/voice'
@@ -25,18 +26,9 @@ const samples = [
 
 type LanguageChoice = LanguageCode | 'auto'
 
-// The game voices every language with one shared Kana bank; whole syllables are easy to understand.
-const chineseOptions = [
-  { value: 'kana', label: '中文：假名（像游戏）' },
-  { value: 'syllables', label: '中文：拼音音节' },
-] as const
-
-const languageOptions = [
-  { value: 'auto', label: '自动' },
-  ...Object.entries(languageNames).map(([value, label]) => ({ value: value as LanguageCode, label })),
-] as const
-
 export function SpeakPage() {
+  const { t } = useTranslation()
+  const { languageNames, presetNames } = useAnimaleseNames()
   const { banks } = useAnimalese()
   const voiceState = useVoiceState()
   const mobile = useMediaQuery(mobileQuery)
@@ -55,6 +47,14 @@ export function SpeakPage() {
   const voiced = useMemo(() => new Set(plan?.schedule.events.flatMap(event => event.type === 'unit' ? [event.token] : [])), [plan])
   const unitCount = plan?.tokens.filter(token => token.kind === 'unit').length ?? 0
   const error = speech.error || renderError
+  const chineseOptions = [
+    { value: 'kana', label: t('speak.chineseKana') },
+    { value: 'syllables', label: t('speak.chineseSyllables') },
+  ] as const
+  const languageOptions = [
+    { value: 'auto', label: t('speak.autoLanguage') },
+    ...Object.entries(languageNames).map(([value, label]) => ({ value: value as LanguageCode, label })),
+  ] as const
 
   const download = async () => {
     if (!voice)
@@ -92,7 +92,7 @@ export function SpeakPage() {
       <section className="speak-main">
         <DialogueBox name={`${presetNames[voiceState.preset]} · ${plan?.bank ?? '…'}`} text={text} revealed={speech.revealed} />
 
-        <TextArea value={text} rows={3} onChange={event => setText(event.target.value)} aria-label="要说的话" />
+        <TextArea value={text} rows={3} onChange={event => setText(event.target.value)} aria-label={t('speak.textLabel')} />
         <div className="row wrap">
           {samples.map(sample => (
             <Tag key={sample} size="small" variant="soft" onClick={() => setText(sample)}>
@@ -103,31 +103,26 @@ export function SpeakPage() {
         </div>
 
         <div className="row wrap">
-          <Segmented label="语言" value={language} options={languageOptions} onChange={setLanguage} />
-          <Segmented label="中文发音" value={chinese} options={chineseOptions} onChange={setChinese} />
+          <Segmented label={t('common.language')} value={language} options={languageOptions} onChange={setLanguage} />
+          <Segmented label={t('common.chinesePronunciation')} value={chinese} options={chineseOptions} onChange={setChinese} />
         </div>
 
         <div className="row wrap actions">
           {speech.playing
-            ? <Button type="primary" danger onClick={speech.stop}>停止</Button>
-            : <Button type="primary" disabled={!voice || unitCount === 0} onClick={() => voice && speech.say(text, voice, { language, chinese })}>说话！</Button>}
-          <Button loading={rendering} disabled={!plan || unitCount === 0} onClick={download}>导出 WAV</Button>
-          {mobile && <Button type="dashed" onClick={() => setPanelOpen(true)}>调声线</Button>}
+            ? <Button type="primary" danger onClick={speech.stop}>{t('common.stop')}</Button>
+            : <Button type="primary" disabled={!voice || unitCount === 0} onClick={() => voice && speech.say(text, voice, { language, chinese })}>{t('common.speak')}</Button>}
+          <Button loading={rendering} disabled={!plan || unitCount === 0} onClick={download}>{t('speak.exportWav')}</Button>
+          {mobile && <Button type="dashed" onClick={() => setPanelOpen(true)}>{t('speak.tuneVoice')}</Button>}
           {plan && (
             <span className="muted">
-              {unitCount}
-              {' 个字，念出 '}
-              {voiced.size}
-              {' 个音 · '}
-              {plan.schedule.duration.toFixed(2)}
-              s
+              {t('speak.stats', { total: unitCount, voiced: voiced.size, duration: plan.schedule.duration.toFixed(2) })}
             </span>
           )}
         </div>
 
         {plan && plan.missing.length > 0 && (
           <p className="banner warn">
-            {`声库 ${plan.bank ?? ''} 缺少 ${plan.missing.map(code => languageNames[code]).join('、')}，这部分会静音。`}
+            {t('speak.missing', { bank: plan.bank ?? '', languages: plan.missing.map(code => languageNames[code]).join(', ') })}
           </p>
         )}
         {error && <p className="banner error">{error}</p>}
@@ -137,7 +132,7 @@ export function SpeakPage() {
 
       {/* animal-island-ui's closed Drawer renders inert="" (React 19 wants a boolean), so mount it only while open. */}
       {mobile
-        ? panelOpen && <Drawer open placement="bottom" height="80vh" title="声线" onClose={() => setPanelOpen(false)}>{panel}</Drawer>
+        ? panelOpen && <Drawer open placement="bottom" height="80vh" title={t('speak.voice')} onClose={() => setPanelOpen(false)}>{panel}</Drawer>
         : <aside className="speak-side card-surface">{panel}</aside>}
     </div>
   )

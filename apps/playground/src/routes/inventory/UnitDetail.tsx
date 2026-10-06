@@ -4,6 +4,7 @@ import type { UnitDefinition } from 'animalese'
 import { sliceUnit } from '@animalese/dsp'
 import { Button } from 'animal-island-ui'
 import { useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { SignalView } from '../../components/charts/SignalView'
 import { useClipPlayer } from '../../components/useClipPlayer'
@@ -17,6 +18,7 @@ interface UnitDetailProps {
 
 /** The selected unit: what was recorded, what came out of baking, and how it sounds. */
 export function UnitDetail({ unit, bank, compact = false }: UnitDetailProps) {
+  const { t } = useTranslation()
   const playClip = useClipPlayer()
   const baked = bank?.manifest.units[unit.id]
   const samples = useMemo(() => bank && baked ? sliceUnit(bank.samples, baked) : undefined, [bank, baked])
@@ -41,26 +43,26 @@ export function UnitDetail({ unit, bank, compact = false }: UnitDetailProps) {
               {!compact && <SignalView samples={samples} sampleRate={bank.manifest.sampleRate} pitch={{ minHz: 60, maxHz: 900 }} referenceHz={bank.manifest.referenceHz} />}
               <dl className="facts">
                 <div>
-                  <dt>时长</dt>
+                  <dt>{t('inventory.duration')}</dt>
                   <dd>{`${Math.round(baked.length / bank.manifest.sampleRate * 1000)} ms`}</dd>
                 </div>
                 <div>
-                  <dt>录音音高</dt>
-                  <dd>{baked.f0 === null ? '清音' : `${Math.round(baked.f0)} Hz`}</dd>
+                  <dt>{t('inventory.recordedPitch')}</dt>
+                  <dd>{baked.f0 === null ? t('common.unvoiced') : `${Math.round(baked.f0)} Hz`}</dd>
                 </div>
                 <div>
-                  <dt>拉平到</dt>
+                  <dt>{t('inventory.flattenedTo')}</dt>
                   <dd>{`${bank.manifest.referenceHz} Hz`}</dd>
                 </div>
               </dl>
               <div className="row wrap">
-                <Button size="small" type="primary" onClick={() => listen(0)}>原调</Button>
-                <Button size="small" onClick={() => listen(1)}>升八度</Button>
-                <Button size="small" onClick={() => listen(-1)}>降八度</Button>
+                <Button size="small" type="primary" onClick={() => listen(0)}>{t('inventory.originalPitch')}</Button>
+                <Button size="small" onClick={() => listen(1)}>{t('inventory.octaveUp')}</Button>
+                <Button size="small" onClick={() => listen(-1)}>{t('inventory.octaveDown')}</Button>
               </div>
             </>
           )
-        : <p className="muted">{bank ? '这个声库里没有这个单元。' : '加载声库中…'}</p>}
+        : <p className="muted">{bank ? t('inventory.unitMissing') : t('inventory.bankLoading')}</p>}
     </div>
   )
 }

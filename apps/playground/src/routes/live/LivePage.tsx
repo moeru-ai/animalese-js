@@ -4,8 +4,9 @@ import { errorMessageFrom } from '@moeru/std'
 import { Button, Select } from 'animal-island-ui'
 import { playSpeech, streamSpeech, textStreamFromSpeechRecognition, toMediaStream, voicePresets } from 'animalese'
 import { useEffect, useRef, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { languageNames, presetNames, useAnimalese } from '../../app/animalese'
+import { useAnimalese, useAnimaleseNames } from '../../app/animalese'
 import { useVoice, useVoiceState } from '../../app/voice'
 import { DialogueBox } from '../../components/DialogueBox'
 import { ParamSlider } from '../../components/ParamSlider'
@@ -28,6 +29,8 @@ const recognitionLanguages: Record<Exclude<LanguageCode, 'en'> | 'en', string> =
  * recognition, or from the keyboard. Voice knobs apply while it speaks.
  */
 export function LivePage() {
+  const { t } = useTranslation()
+  const { languageNames, presetNames } = useAnimaleseNames()
   const { banks, audioContext } = useAnimalese()
   const voiceState = useVoiceState('peppy')
   const voice = useVoice(banks, voiceState.input)
@@ -79,7 +82,7 @@ export function LivePage() {
     if (source === 'mic') {
       const recognizer = createRecognizer(recognitionLanguages[language])
       if (!recognizer) {
-        setError('这个浏览器不支持语音识别，请改用打字。')
+        setError(t('live.unsupported'))
         return
       }
       watchInterim(recognizer, setInterim)
@@ -92,7 +95,7 @@ export function LivePage() {
           controller.enqueue(piece)
         },
       }))
-      recognizer.addEventListener('error', event => setError(`语音识别出错：${(event as Event & { error?: string }).error ?? 'unknown'}`))
+      recognizer.addEventListener('error', event => setError(t('live.recognitionError', { error: (event as Event & { error?: string }).error ?? 'unknown' })))
       recognizer.start()
       stopInputRef.current = () => recognizer.stop()
     }
@@ -143,20 +146,20 @@ export function LivePage() {
       <section className="speak-main">
         <DialogueBox
           name={`${presetNames[voiceState.preset]} · ${voice?.bank ?? '…'}`}
-          text={transcript + (interim ? ` ${interim}` : '') || (running ? '……' : '点“开始”后说话或打字')}
+          text={transcript + (interim ? ` ${interim}` : '') || (running ? '……' : t('live.idle'))}
           revealed={running ? revealed : null}
         />
 
         <div className="row wrap">
           <Segmented
-            label="输入"
+            label={t('live.input')}
             value={source}
-            options={[{ value: 'mic', label: recognitionAvailable ? '语音识别' : '语音识别（不支持）' }, { value: 'typing', label: '打字' }]}
+            options={[{ value: 'mic', label: recognitionAvailable ? t('live.microphone') : t('live.microphoneUnsupported') }, { value: 'typing', label: t('live.typing') }]}
             onChange={setSource}
           />
-          <Segmented label="语言" value={language} options={(['zh', 'ja', 'ko', 'en'] as const).map(value => ({ value, label: languageNames[value] }))} onChange={setLanguage} />
-          <Segmented label="中文发音" value={chinese} options={[{ value: 'kana', label: '假名' }, { value: 'syllables', label: '拼音音节' }]} onChange={setChinese} />
-          <Segmented label="输出" value={output} options={[{ value: 'speaker', label: '扬声器' }, { value: 'media', label: 'MediaStream' }]} onChange={setOutput} />
+          <Segmented label={t('common.language')} value={language} options={(['zh', 'ja', 'ko', 'en'] as const).map(value => ({ value, label: languageNames[value] }))} onChange={setLanguage} />
+          <Segmented label={t('common.chinesePronunciation')} value={chinese} options={[{ value: 'kana', label: t('live.kana') }, { value: 'syllables', label: t('live.pinyinSyllables') }]} onChange={setChinese} />
+          <Segmented label={t('live.output')} value={output} options={[{ value: 'speaker', label: t('live.speaker') }, { value: 'media', label: 'MediaStream' }]} onChange={setOutput} />
         </div>
 
         {source === 'typing' && (
@@ -164,20 +167,20 @@ export function LivePage() {
             value={transcript}
             rows={3}
             disabled={!running}
-            placeholder={running ? '边打字边听……' : '先点“开始”'}
+            placeholder={running ? t('live.typingActive') : t('live.typingIdle')}
             onChange={event => type(event.target.value)}
-            aria-label="实时输入"
+            aria-label={t('live.realtimeInput')}
           />
         )}
 
         <div className="row wrap actions">
           {running
-            ? <Button type="primary" danger onClick={stop}>停止</Button>
-            : <Button type="primary" disabled={!voice || (source === 'mic' && !recognitionAvailable)} onClick={start}>开始</Button>}
+            ? <Button type="primary" danger onClick={stop}>{t('common.stop')}</Button>
+            : <Button type="primary" disabled={!voice || (source === 'mic' && !recognitionAvailable)} onClick={start}>{t('common.start')}</Button>}
           <span className="muted">
             {source === 'mic'
-              ? '识别出的整句才会念出来；灰色字是识别器还没确定的部分。'
-              : '只念新打的字；删改前面的内容不会撤回已经念出的音。'}
+              ? t('live.micHint')
+              : t('live.typingHint')}
           </span>
         </div>
 
@@ -192,18 +195,18 @@ export function LivePage() {
       <aside className="speak-side card-surface">
         <div className="voice-panel">
           <label className="field">
-            <span>性格</span>
+            <span>{t('common.personality')}</span>
             <Select
-              aria-label="性格"
+              aria-label={t('common.personality')}
               value={voiceState.preset}
               onChange={key => voiceState.setPreset(key as VoicePreset)}
               options={Object.keys(voicePresets).map(key => ({ key, label: presetNames[key as VoicePreset] }))}
             />
           </label>
-          <p className="muted">说话过程中拖动滑块，后面的音会立刻跟着变。</p>
-          <ParamSlider label="音高" value={knobs.baseHz} min={80} max={700} step={5} format={value => `${value} Hz`} onChange={baseHz => setKnobs({ baseHz })} />
-          <ParamSlider label="最快语速" value={knobs.speed} min={3} max={20} step={0.5} format={value => `${value} 音/秒`} onChange={speed => setKnobs({ speed })} />
-          <ParamSlider label="起伏" value={knobs.liveliness} min={0} max={1} step={0.05} format={value => value.toFixed(2)} onChange={liveliness => setKnobs({ liveliness })} />
+          <p className="muted">{t('live.knobsHint')}</p>
+          <ParamSlider label={t('common.pitch')} value={knobs.baseHz} min={80} max={700} step={5} format={value => `${value} Hz`} onChange={baseHz => setKnobs({ baseHz })} />
+          <ParamSlider label={t('common.maxSpeechRate')} value={knobs.speed} min={3} max={20} step={0.5} format={value => t('common.unitsPerSecond', { value })} onChange={speed => setKnobs({ speed })} />
+          <ParamSlider label={t('common.liveliness')} value={knobs.liveliness} min={0} max={1} step={0.05} format={value => value.toFixed(2)} onChange={liveliness => setKnobs({ liveliness })} />
         </div>
       </aside>
     </div>

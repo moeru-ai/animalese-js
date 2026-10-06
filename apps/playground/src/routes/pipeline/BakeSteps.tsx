@@ -4,6 +4,7 @@ import { applyFades, estimatePitch, flattenPitch, normalizeLoudness, pitchBand, 
 import { errorMessageFrom } from '@moeru/std'
 import { Button } from 'animal-island-ui'
 import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { useAnimalese } from '../../app/animalese'
 import { SignalView } from '../../components/charts/SignalView'
@@ -18,6 +19,7 @@ const ms = (samples: Float32Array): string => `${Math.round(samples.length / sam
 
 /** The offline half, run live on one recording with the same code the baker uses. */
 export function BakeSteps({ firstIndex }: { firstIndex: number }) {
+  const { t } = useTranslation()
   const { audioContext } = useAnimalese()
   const playClip = useClipPlayer()
   const [clips, setClips] = useState<DemoClip[]>([])
@@ -76,25 +78,25 @@ export function BakeSteps({ firstIndex }: { firstIndex: number }) {
 
   const seconds = raw ? raw.length / sampleRate : 1
   const listen = (samples: Float32Array) => (
-    <Button size="small" onClick={() => playClip(samples, sampleRate)}>听</Button>
+    <Button size="small" onClick={() => playClip(samples, sampleRate)}>{t('common.listen')}</Button>
   )
 
   return (
     <>
       <div className="row wrap">
         <Segmented
-          label="录音"
+          label={t('pipeline.steps.record')}
           value={clipId}
-          options={[...clips.map(clip => ({ value: clip.id, label: `${clip.carrier} ${clip.reading}` })), ...(clipId === 'mic' ? [{ value: 'mic', label: '我的声音' }] : [])]}
+          options={[...clips.map(clip => ({ value: clip.id, label: `${clip.carrier} ${clip.reading}` })), ...(clipId === 'mic' ? [{ value: 'mic', label: t('pipeline.bake.myVoice') }] : [])]}
           onChange={setClipId}
         />
-        <Button size="small" type="dashed" loading={recording} onClick={record}>{recording ? '录音中…' : '录自己的声音（1.5 秒）'}</Button>
+        <Button size="small" type="dashed" loading={recording} onClick={record}>{recording ? t('pipeline.bake.recording') : t('pipeline.bake.recordOwn')}</Button>
       </div>
-      {micError && <p className="banner error">{`麦克风不可用：${micError}`}</p>}
+      {micError && <p className="banner error">{t('pipeline.bake.microphoneError', { error: micError })}</p>}
 
       {raw && stages && (
         <>
-          <StepCard id="record" index={firstIndex} title="录音" summary="把载体字发给 TTS，拿回一段完整的发音。前后有静音，音高带着原来的声调。">
+          <StepCard id="record" index={firstIndex} title={t('pipeline.steps.record')} summary={t('pipeline.bake.recordSummary')}>
             <SignalView samples={raw} sampleRate={sampleRate} pitch={wide} seconds={seconds} />
             <div className="row">
               {listen(raw)}
@@ -102,7 +104,7 @@ export function BakeSteps({ firstIndex }: { firstIndex: number }) {
             </div>
           </StepCard>
 
-          <StepCard id="trim" index={firstIndex + 1} title="切静音" summary="按 5 ms 一帧算响度，去掉首尾比最响处低 40 dB 的部分，相当于教程里的“把声音剪断”。">
+          <StepCard id="trim" index={firstIndex + 1} title={t('pipeline.steps.trim')} summary={t('pipeline.bake.trimSummary')}>
             <SignalView samples={stages.trimmed} sampleRate={sampleRate} seconds={seconds} />
             <div className="row">
               {listen(stages.trimmed)}
@@ -110,44 +112,44 @@ export function BakeSteps({ firstIndex }: { firstIndex: number }) {
             </div>
           </StepCard>
 
-          <StepCard id="consonant" index={firstIndex + 2} title="缩短辅音" summary="游戏里的单元几乎全是元音。找到开始有基频的地方，前面的辅音只留一小段，免得 s、sh 这样的噪声占满 100 ms 的时间槽。">
+          <StepCard id="consonant" index={firstIndex + 2} title={t('pipeline.steps.consonant')} summary={t('pipeline.bake.consonantSummary')}>
             <SignalView
               samples={stages.trimmed}
               sampleRate={sampleRate}
               seconds={seconds}
-              regions={[{ start: 0, end: stages.trimmed.length - stages.lead.length, label: '切掉' }]}
+              regions={[{ start: 0, end: stages.trimmed.length - stages.lead.length, label: t('pipeline.bake.cut') }]}
             />
-            <ParamSlider label="保留辅音" value={leadMs} min={0} max={120} step={5} format={value => `${value} ms`} onChange={setLeadMs} />
+            <ParamSlider label={t('pipeline.bake.keepConsonant')} value={leadMs} min={0} max={120} step={5} format={value => `${value} ms`} onChange={setLeadMs} />
             <div className="row">
               {listen(stages.lead)}
-              <span className="muted">{stages.f0 ? `录音基频约 ${Math.round(stages.f0)} Hz` : '清音，没有基频，跳过'}</span>
+              <span className="muted">{stages.f0 ? t('pipeline.bake.estimatedPitch', { pitch: Math.round(stages.f0) }) : t('pipeline.bake.noPitch')}</span>
             </div>
           </StepCard>
 
-          <StepCard id="flatten" index={firstIndex + 3} title="拉平音高" summary="用 TD-PSOLA 按基频周期切片，再以固定间隔重新叠加，把整条音高曲线拉成一条直线，时长和音色不变。这就是“每个字拉成平的一声”。">
+          <StepCard id="flatten" index={firstIndex + 3} title={t('pipeline.steps.flatten')} summary={t('pipeline.bake.flattenSummary')}>
             <div className="compare">
               <div>
-                <p className="caption">之前</p>
+                <p className="caption">{t('pipeline.bake.before')}</p>
                 <SignalView samples={stages.lead} sampleRate={sampleRate} pitch={wide} referenceHz={referenceHz} />
               </div>
               <div>
-                <p className="caption">之后</p>
+                <p className="caption">{t('pipeline.bake.after')}</p>
                 <SignalView samples={stages.flat} sampleRate={sampleRate} pitch={wide} referenceHz={referenceHz} />
               </div>
             </div>
-            <ParamSlider label="参考音" value={referenceHz} min={80} max={500} step={1} format={value => `${value} Hz`} hint="烘焙时取整个声库的中位基频，取整到半音。" onChange={setReferenceHz} />
+            <ParamSlider label={t('pipeline.bake.referencePitch')} value={referenceHz} min={80} max={500} step={1} format={value => `${value} Hz`} hint={t('pipeline.bake.referenceHint')} onChange={setReferenceHz} />
             <div className="row">
               {listen(stages.lead)}
               {listen(stages.flat)}
             </div>
           </StepCard>
 
-          <StepCard id="finish" index={firstIndex + 4} title="截长、淡入淡出、响度" summary="截到最长长度，加 3 ms 淡入和余弦淡出，响度统一到 −18 dBFS。所有单元拼成一个 sprite.wav，manifest.json 记下每个单元的位置。">
+          <StepCard id="finish" index={firstIndex + 4} title={t('pipeline.steps.finish')} summary={t('pipeline.bake.finishSummary')}>
             <SignalView samples={stages.final} sampleRate={sampleRate} seconds={seconds} />
-            <ParamSlider label="最长" value={maxMs} min={80} max={400} step={10} format={value => `${value} ms`} onChange={setMaxMs} />
+            <ParamSlider label={t('pipeline.bake.maximum')} value={maxMs} min={80} max={400} step={10} format={value => `${value} ms`} onChange={setMaxMs} />
             <div className="row">
               {listen(stages.final)}
-              <Button size="small" onClick={() => playClip(stages.final, sampleRate, 2)}>升八度听</Button>
+              <Button size="small" onClick={() => playClip(stages.final, sampleRate, 2)}>{t('pipeline.bake.listenOctaveUp')}</Button>
               <span className="muted">{ms(stages.final)}</span>
             </div>
           </StepCard>

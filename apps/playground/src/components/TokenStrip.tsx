@@ -1,8 +1,9 @@
 import type { Token } from 'animalese'
 
 import { tokenLanguage } from 'animalese'
+import { useTranslation } from 'react-i18next'
 
-import { languageNames } from '../app/animalese'
+import { useAnimaleseNames } from '../app/animalese'
 
 interface TokenStripProps {
   tokens: readonly Token[]
@@ -13,8 +14,10 @@ interface TokenStripProps {
 
 /** Each character (or English syllable) above the unit that voices it. */
 export function TokenStrip({ tokens, voiced, active = -1 }: TokenStripProps) {
+  const { t } = useTranslation()
+  const { languageNames } = useAnimaleseNames()
   return (
-    <div className="token-strip" role="list" aria-label="切分结果">
+    <div className="token-strip" role="list" aria-label={t('token.result')}>
       {/* Tokens are derived from the text and never reordered, so index keys are stable. */}
       {tokens.map((token, index) => {
         if (token.kind !== 'unit') {
@@ -28,7 +31,7 @@ export function TokenStrip({ tokens, voiced, active = -1 }: TokenStripProps) {
         const classes = ['token', `lang-${language}`, skipped && 'skipped', token.weak && 'weak', index === active && 'active'].filter(Boolean).join(' ')
         return (
           // eslint-disable-next-line react/no-array-index-key
-          <span key={index} role="listitem" className={classes} title={`${languageNames[language]} · ${token.unit}${token.weak ? ' · 轻读' : ''}${skipped ? ' · 跳过' : ''}`}>
+          <span key={index} role="listitem" className={classes} title={`${languageNames[language]} · ${token.unit}${token.weak ? ` · ${t('token.weak')}` : ''}${skipped ? ` · ${t('token.skipped')}` : ''}`}>
             <span className="token-text">{token.text}</span>
             <span className="token-unit">{token.unit.slice(token.unit.indexOf('/') + 1)}</span>
           </span>
