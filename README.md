@@ -1,12 +1,16 @@
 # `animalese-js`
 
+![animalese-js preview card](./docs/assets/og-image.png)
+
 [![License][license-src]][license-href]
 [![Node.js][node-src]][node-href]
 [![pnpm][pnpm-src]][pnpm-href]
 
-![Animalese playground](./docs/assets/playground.png)
-
 `animalese-js` makes Animal Crossing style speech ("Animalese") in TypeScript. You give it text in Chinese, Japanese, Korean, or English. It gives you the babble that the villagers speak, in time with the dialogue box.
+
+**Playground**
+
+![Animalese playground in English](./docs/assets/playground.png)
 
 The work has two parts:
 
