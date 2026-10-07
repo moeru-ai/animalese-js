@@ -59,6 +59,19 @@ code {
   padding: 20px 16px 12px;
 }
 
+/* The ribbon's Nunito-specific top padding pushes ChillRound below center. */
+.brand [class*='animal-ribbonText-'] {
+  padding-top: 0;
+  transform: translateY(-0.08em);
+}
+
+/* Center ChillRound's visible glyphs, not just its taller line box. */
+.nav a > span,
+button[class*='animal-btn-'] > span:not([class*='animal-btn-icon-']) {
+  position: relative;
+  top: -0.08em;
+}
+
 .nav {
   display: flex;
   gap: 8px;
@@ -67,8 +80,12 @@ code {
 .nav a {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  min-height: 44px;
   gap: 6px;
   padding: 8px 16px;
+  line-height: 1.25;
+  white-space: nowrap;
   border-radius: 999px;
   border: 2px solid var(--animal-border-color);
   background: var(--surface);
@@ -89,16 +106,84 @@ code {
 }
 
 .nav svg {
+  display: block;
+  flex: none;
   width: 18px;
   height: 18px;
   fill: none;
   stroke: currentColor;
   stroke-width: 2;
   stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.header-actions {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.github-link {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--animal-border-color);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--animal-shadow-sm);
+  transition: transform var(--animal-motion-duration-fast) var(--animal-motion-ease),
+    background var(--animal-motion-duration-fast),
+    border-color var(--animal-motion-duration-fast);
+}
+
+.github-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: var(--animal-primary-color-bg);
+  color: var(--accent);
+}
+
+.github-link:active {
+  transform: translateY(1px);
+}
+
+.github-link:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Iconify simple-icons:github (CC0), bundled for offline rendering. */
+.github-icon {
+  width: 22px;
+  height: 22px;
+  background: currentColor;
+  mask: url('../assets/github.svg') center / contain no-repeat;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .github-link {
+    transition: none;
+  }
+
+  .github-link:hover,
+  .github-link:active {
+    transform: none;
+  }
+}
+
+.locale-picker {
+  display: flex;
+  align-items: center;
 }
 
 .locale-picker select {
-  padding: 8px 10px;
+  height: 44px;
+  padding: 0 10px;
+  font-size: 14px;
   border: 2px solid var(--animal-border-color);
   border-radius: 999px;
   color: var(--ink);
@@ -895,7 +980,7 @@ code {
   }
 }
 
-@media (max-width: 720px) {
+@media (max-width: 960px) {
   .header {
     padding-top: 12px;
   }
@@ -922,9 +1007,11 @@ code {
   }
 
   .nav a {
+    flex: 1;
+    min-width: 0;
     flex-direction: column;
     gap: 2px;
-    padding: 6px 18px;
+    padding: 6px 4px;
     border: 0;
     background: transparent;
     font-size: 12px;
@@ -935,6 +1022,9 @@ code {
     color: var(--accent);
   }
 
+}
+
+@media (max-width: 720px) {
   .dialogue {
     padding: 30px 20px 20px;
   }
@@ -984,5 +1074,20 @@ code {
 
   .unit-detail.compact .facts div {
     padding: 4px 8px;
+  }
+}
+
+@media (max-width: 380px) {
+  .header {
+    gap: 8px;
+    padding-inline: 10px;
+  }
+
+  .brand {
+    zoom: 0.6;
+  }
+
+  .header-actions {
+    gap: 6px;
   }
 }
